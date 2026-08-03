@@ -1,0 +1,317 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đơn hàng của tôi - ShopVN</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/style.css?v=4" />
+  <style>
+    .order-card { border-radius:14px; transition:all .2s; }
+    .order-card:hover { box-shadow:0 4px 20px rgba(0,0,0,.1)!important; }
+    .order-status { font-size:.78rem; font-weight:600; padding:.3rem .8rem; border-radius:20px; }
+    .status-pending    { background:#fff3cd; color:#664d03; }
+    .status-processing { background:#cfe2ff; color:#084298; }
+    .status-shipped    { background:#d1ecf1; color:#0c5460; }
+    .status-delivered  { background:#d1e7dd; color:#0f5132; }
+    .status-cancelled  { background:#f8d7da; color:#842029; }
+    .order-timeline { position:relative; padding-left:1.5rem; }
+    .order-timeline::before { content:''; position:absolute; left:.4rem; top:0; bottom:0; width:2px; background:#dee2e6; }
+    .timeline-item { position:relative; margin-bottom:1rem; }
+    .timeline-item::before { content:''; position:absolute; left:-1.15rem; top:.25rem; width:12px; height:12px; border-radius:50%; border:2px solid #dee2e6; background:#fff; }
+    .timeline-item.done::before { background:#198754; border-color:#198754; }
+    .timeline-item.active::before { background:#0d6efd; border-color:#0d6efd; box-shadow:0 0 0 4px rgba(13,110,253,.15); }
+  </style>
+</head>
+<body style="min-height:100vh;display:flex;flex-direction:column">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow">
+    <div class="container">
+      <a class="navbar-brand fw-bold fs-4" href="index.html"><i class="bi bi-bag-heart-fill me-2"></i>ShopVN</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarMain">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="index.html">Trang chủ</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">Sản phẩm</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-2">
+          <a href="cart.html" class="btn btn-outline-light position-relative">
+            <i class="bi bi-cart3 fs-5"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount">0</span>
+          </a>
+          <div id="navAuthArea"></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="bg-light border-bottom py-2">
+    <div class="container"><nav aria-label="breadcrumb"><ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
+      <li class="breadcrumb-item"><a href="profile.html">Tài khoản</a></li>
+      <li class="breadcrumb-item active">Đơn hàng của tôi</li>
+    </ol></nav></div>
+  </div>
+
+  <div class="container py-5 flex-grow-1">
+    <h2 class="fw-bold mb-4"><i class="bi bi-bag-check me-2 text-primary"></i>Đơn hàng của tôi</h2>
+
+    <!-- Filter tabs -->
+    <ul class="nav nav-pills mb-4 gap-1" id="orderTabs">
+      <li class="nav-item"><button class="nav-link active" data-status="all">Tất cả</button></li>
+      <li class="nav-item"><button class="nav-link" data-status="processing">Đang xử lý</button></li>
+      <li class="nav-item"><button class="nav-link" data-status="shipped">Đang giao</button></li>
+      <li class="nav-item"><button class="nav-link" data-status="delivered">Đã nhận</button></li>
+      <li class="nav-item"><button class="nav-link" data-status="cancelled">Đã hủy</button></li>
+    </ul>
+
+    <div id="orderList"></div>
+  </div>
+
+  <!-- Order Detail Modal -->
+  <div class="modal fade" id="orderDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold"><i class="bi bi-receipt me-2 text-primary"></i>Chi tiết đơn hàng</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="orderDetailBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+    <div id="toastMsg" class="toast align-items-center border-0" role="alert">
+      <div class="d-flex"><div class="toast-body" id="toastBody"></div><button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button></div>
+    </div>
+  </div>
+
+  <footer class="bg-dark text-white py-4 mt-auto"><div class="container text-center"><p class="mb-0 text-muted">&copy; 2026 ShopVN. All rights reserved.</p></div></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/notifications.js"></script>
+  <script>
+    // Demo orders data — ảnh sẽ được load từ API
+    const DEMO_ORDERS = [
+      { id:'SVN20260801', date:'01/08/2026', status:'delivered', total:89.97,
+        items:[
+          {title:'Fjallraven - Foldsack No. 1 Backpack', qty:1, price:109.95, productId:1},
+          {title:'Mens Casual Premium Slim Fit T-Shirts', qty:2, price:22.3,  productId:2}
+        ], address:'123 Nguyễn Huệ, Q.1, TP.HCM', payment:'COD' },
+      { id:'SVN20260728', date:'28/07/2026', status:'shipped', total:55.99,
+        items:[
+          {title:'Mens Cotton Jacket', qty:1, price:55.99, productId:3}
+        ], address:'456 Lê Lợi, Q.1, TP.HCM', payment:'MoMo' },
+      { id:'SVN20260720', date:'20/07/2026', status:'processing', total:695,
+        items:[
+          {title:'WD 2TB Elements Portable Hard Drive', qty:1, price:64.0,   productId:6},
+          {title:'Samsung 49-Inch CHG90 Gaming Monitor', qty:1, price:999.99, productId:7}
+        ], address:'789 Trần Hưng Đạo, Q.5, TP.HCM', payment:'VISA' },
+      { id:'SVN20260715', date:'15/07/2026', status:'cancelled', total:19.99,
+        items:[
+          {title:"Opna Women's Short Sleeve Moisture", qty:1, price:7.95, productId:19}
+        ], address:'12 Pasteur, Q.1, TP.HCM', payment:'COD' },
+    ];
+
+    // Cache ảnh sản phẩm từ API
+    const IMG_CACHE = {};
+
+    async function preloadImages() {
+      // Lấy tất cả productId cần load
+      const ids = [...new Set(DEMO_ORDERS.flatMap(o => o.items.map(i => i.productId)))];
+      await Promise.all(ids.map(async id => {
+        try {
+          const res = await fetch(`https://fakestoreapi.com/products/${id}`);
+          const p   = await res.json();
+          IMG_CACHE[id] = p.image;
+        } catch {
+          IMG_CACHE[id] = null;
+        }
+      }));
+    }
+
+    function getItemImg(item) {
+      const url = IMG_CACHE[item.productId];
+      if (!url) return `<div style="width:48px;height:48px;background:#f8f9fa;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#adb5bd;font-size:1.2rem"><i class="bi bi-image"></i></div>`;
+      return `<img src="${url}" alt="${item.title}" referrerpolicy="no-referrer"
+                style="width:48px;height:48px;object-fit:contain;background:#f8f9fa;border-radius:8px;padding:4px" />`;
+    }
+
+    function getItemImgLg(item) {
+      const url = IMG_CACHE[item.productId] || (item.image || null);
+      if (!url) return `<div style="width:56px;height:56px;background:#f8f9fa;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#adb5bd;font-size:1.4rem;flex-shrink:0"><i class="bi bi-image"></i></div>`;
+      return `<img src="${url}" alt="${item.title}" referrerpolicy="no-referrer"
+                style="width:56px;height:56px;object-fit:contain;background:#f8f9fa;border-radius:8px;padding:4px;flex-shrink:0" />`;
+    }
+
+    const STATUS_MAP = {
+      pending:    { label:'Chờ xác nhận', cls:'status-pending'    },
+      processing: { label:'Đang xử lý',  cls:'status-processing'  },
+      shipped:    { label:'Đang giao',    cls:'status-shipped'     },
+      delivered:  { label:'Đã nhận hàng',cls:'status-delivered'   },
+      cancelled:  { label:'Đã hủy',      cls:'status-cancelled'   },
+    };
+
+    let currentFilter = 'all';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      Cart.updateCartUI();
+
+      // Hiện skeleton trong lúc load ảnh
+      document.getElementById('orderList').innerHTML = `
+        <div class="text-center py-4 text-muted">
+          <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+          Đang tải đơn hàng...
+        </div>`;
+
+      await preloadImages();
+      renderOrders();
+
+      document.querySelectorAll('#orderTabs .nav-link').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#orderTabs .nav-link').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentFilter = btn.dataset.status;
+          renderOrders();
+        });
+      });
+    });
+
+    function renderOrders() {
+      const list = document.getElementById('orderList');
+      let orders = DEMO_ORDERS;
+      if (currentFilter !== 'all') orders = orders.filter(o => o.status === currentFilter);
+
+      if (!orders.length) {
+        list.innerHTML = `<div class="text-center py-5 text-muted">
+          <i class="bi bi-bag fs-1 d-block mb-3 opacity-25"></i>
+          <p>Không có đơn hàng nào.</p>
+          <a href="products.html" class="btn btn-primary px-4"><i class="bi bi-shop me-2"></i>Mua sắm ngay</a>
+        </div>`; return;
+      }
+
+      list.innerHTML = orders.map(order => {
+        const s = STATUS_MAP[order.status] || STATUS_MAP.pending;
+        const img = order.items[0]?.image;
+        return `
+          <div class="card order-card border-0 shadow-sm mb-3">
+            <div class="card-body p-4">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-3">
+                <div>
+                  <div class="fw-bold">Mã đơn: <span class="text-primary">#${order.id}</span></div>
+                  <small class="text-muted"><i class="bi bi-calendar3 me-1"></i>${order.date}</small>
+                </div>
+                <span class="order-status ${s.cls}">${s.label}</span>
+              </div>
+              <div class="d-flex align-items-center gap-3 mb-3">
+                ${order.items.slice(0,3).map(i => getItemImg(i)).join('')}
+                ${order.items.length > 3 ? `<span class="text-muted small">+${order.items.length-3} sản phẩm</span>` : ''}
+                <div class="ms-auto text-end">
+                  <div class="text-muted small">${order.items.length} sản phẩm</div>
+                  <div class="fw-bold text-primary">${API.formatPrice(order.total)}</div>
+                </div>
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-outline-primary btn-sm px-3" onclick="showOrderDetail('${order.id}')">
+                  <i class="bi bi-eye me-1"></i>Chi tiết
+                </button>
+                ${order.status === 'delivered'
+                  ? `<button class="btn btn-outline-success btn-sm px-3" onclick="rateOrder('${order.id}')"><i class="bi bi-star me-1"></i>Đánh giá</button>
+                     <button class="btn btn-primary btn-sm px-3" onclick="rebuy('${order.id}')"><i class="bi bi-arrow-repeat me-1"></i>Mua lại</button>`
+                  : ''}
+                ${order.status === 'processing'
+                  ? `<button class="btn btn-outline-danger btn-sm px-3" onclick="cancelOrder('${order.id}')"><i class="bi bi-x-circle me-1"></i>Hủy đơn</button>` : ''}
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function showOrderDetail(id) {
+      const order = DEMO_ORDERS.find(o => o.id === id);
+      if (!order) return;
+      const s = STATUS_MAP[order.status];
+      const steps = ['pending','processing','shipped','delivered'];
+      const stepIdx = steps.indexOf(order.status);
+
+      document.getElementById('orderDetailBody').innerHTML = `
+        <div class="row g-4">
+          <div class="col-md-8">
+            <h6 class="fw-bold mb-3">Sản phẩm</h6>
+            ${order.items.map(item => `
+              <div class="d-flex align-items-center gap-3 mb-2 pb-2 border-bottom">
+                ${getItemImgLg(item)}
+                <div class="flex-grow-1"><div class="fw-semibold small">${item.title}</div><div class="text-muted small">x${item.qty}</div></div>
+                <div class="fw-bold text-primary">${API.formatPrice(item.price)}</div>
+              </div>`).join('')}
+
+            <div class="mt-3">
+              <h6 class="fw-bold mb-2">Trạng thái đơn hàng</h6>
+              <div class="order-timeline">
+                ${['Đặt hàng','Xác nhận','Đang giao','Đã nhận'].map((step, i) => `
+                  <div class="timeline-item ${i < stepIdx ? 'done' : i === stepIdx && order.status !== 'cancelled' ? 'active' : ''}">
+                    <div class="fw-semibold small">${step}</div>
+                    <div class="text-muted" style="font-size:.75rem">${i <= stepIdx && order.status !== 'cancelled' ? order.date : '—'}</div>
+                  </div>`).join('')}
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="bg-light rounded-3 p-3">
+              <h6 class="fw-bold mb-3">Thông tin đơn hàng</h6>
+              <div class="mb-2"><div class="text-muted small">Mã đơn</div><div class="fw-semibold">#${order.id}</div></div>
+              <div class="mb-2"><div class="text-muted small">Ngày đặt</div><div class="fw-semibold">${order.date}</div></div>
+              <div class="mb-2"><div class="text-muted small">Trạng thái</div><span class="order-status ${s.cls}">${s.label}</span></div>
+              <div class="mb-2"><div class="text-muted small">Thanh toán</div><div class="fw-semibold">${order.payment}</div></div>
+              <div class="mb-2"><div class="text-muted small">Địa chỉ giao</div><div class="fw-semibold small">${order.address}</div></div>
+              <hr/>
+              <div class="d-flex justify-content-between fw-bold">
+                <span>Tổng cộng</span><span class="text-primary">${API.formatPrice(order.total)}</span>
+              </div>
+            </div>
+          </div>
+        </div>`;
+
+      new bootstrap.Modal(document.getElementById('orderDetailModal')).show();
+    }
+
+    function cancelOrder(id) {
+      if (!confirm('Bạn có chắc muốn hủy đơn hàng này?')) return;
+      const order = DEMO_ORDERS.find(o => o.id === id);
+      if (order) { order.status = 'cancelled'; renderOrders(); showToast('<i class="bi bi-check-circle me-2"></i>Đã hủy đơn hàng.', 'warning'); }
+    }
+
+    function rebuy(id) {
+      const order = DEMO_ORDERS.find(o => o.id === id);
+      if (!order) return;
+      order.items.forEach(i => Cart.add(i.id || Date.now(), i.title, i.price, i.image));
+      showToast(`<i class="bi bi-cart-check me-2"></i>Đã thêm ${order.items.length} sản phẩm vào giỏ!`, 'success');
+    }
+
+    function rateOrder(id) {
+      showToast('<i class="bi bi-star-fill me-2"></i>Cảm ơn bạn đã đánh giá!', 'success');
+    }
+
+    function showToast(msg, type = 'success') {
+      const el = document.getElementById('toastMsg');
+      const body = document.getElementById('toastBody');
+      if (!el || !body) return;
+      el.className = `toast align-items-center text-bg-${type} border-0`;
+      body.innerHTML = msg;
+      bootstrap.Toast.getOrCreateInstance(el, { delay: 3000 }).show();
+    }
+  </script>
+  <script src="js/footer-template.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+

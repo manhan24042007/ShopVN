@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 - Không tìm thấy trang | ShopVN</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/style.css?v=4" />
+  <style>
+    body { background:linear-gradient(135deg,#f8f9ff 0%,#e8f0fe 100%); min-height:100vh; display:flex; flex-direction:column; }
+    .error-num { font-size:clamp(6rem,20vw,10rem); font-weight:900; background:linear-gradient(135deg,#0d6efd,#7c3aed); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; }
+    .floating { animation:floating 3s ease-in-out infinite; }
+    @keyframes floating { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
+    .search-box { max-width:480px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-dark bg-primary shadow">
+    <div class="container">
+      <a class="navbar-brand fw-bold fs-4" href="index.html"><i class="bi bi-bag-heart-fill me-2"></i>ShopVN</a>
+      <a href="cart.html" class="btn btn-outline-light position-relative">
+        <i class="bi bi-cart3 fs-5"></i>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount">0</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="flex-grow-1 d-flex align-items-center">
+    <div class="container text-center py-5">
+      <div class="floating mb-3">
+        <i class="bi bi-emoji-dizzy text-primary" style="font-size:5rem"></i>
+      </div>
+      <div class="error-num mb-2">404</div>
+      <h2 class="fw-bold mb-2">Trang không tìm thấy</h2>
+      <p class="text-muted mb-4 fs-5">Trang bạn tìm kiếm không tồn tại hoặc đã bị di chuyển.</p>
+
+      <!-- Search -->
+      <div class="search-box mx-auto mb-5">
+        <div class="input-group input-group-lg shadow-sm">
+          <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" class="form-control border-start-0 ps-0" id="s404Input" placeholder="Tìm sản phẩm bạn cần..." />
+          <button class="btn btn-primary px-4" id="s404Btn">Tìm kiếm</button>
+        </div>
+      </div>
+
+      <!-- Quick links -->
+      <div class="row g-3 justify-content-center" style="max-width:600px;margin:0 auto">
+        <div class="col-6 col-sm-3">
+          <a href="index.html" class="btn btn-outline-primary w-100 py-3 d-flex flex-column align-items-center gap-1">
+            <i class="bi bi-house fs-4"></i><span class="small fw-semibold">Trang chủ</span>
+          </a>
+        </div>
+        <div class="col-6 col-sm-3">
+          <a href="products.html" class="btn btn-outline-primary w-100 py-3 d-flex flex-column align-items-center gap-1">
+            <i class="bi bi-shop fs-4"></i><span class="small fw-semibold">Sản phẩm</span>
+          </a>
+        </div>
+        <div class="col-6 col-sm-3">
+          <a href="cart.html" class="btn btn-outline-primary w-100 py-3 d-flex flex-column align-items-center gap-1">
+            <i class="bi bi-cart3 fs-4"></i><span class="small fw-semibold">Giỏ hàng</span>
+          </a>
+        </div>
+        <div class="col-6 col-sm-3">
+          <a href="auth.html" class="btn btn-outline-primary w-100 py-3 d-flex flex-column align-items-center gap-1">
+            <i class="bi bi-person fs-4"></i><span class="small fw-semibold">Tài khoản</span>
+          </a>
+        </div>
+      </div>
+
+      <p class="mt-5 text-muted small">
+        <i class="bi bi-headset me-1"></i>
+        Cần hỗ trợ? <a href="mailto:support@shopvn.com">support@shopvn.com</a> hoặc gọi <strong>1800 1234</strong>
+      </p>
+    </div>
+  </main>
+
+  <footer class="bg-dark text-white py-4 mt-auto">
+    <div class="container">
+      <div class="row g-3 align-items-center">
+        <div class="col-md-4">
+          <a href="index.html" class="text-white text-decoration-none fw-bold">
+            <i class="bi bi-bag-heart-fill me-2 text-primary"></i>ShopVN
+          </a>
+        </div>
+        <div class="col-md-4 text-center">
+          <p class="mb-0 text-white-50 small">&copy; 2026 ShopVN. All rights reserved.</p>
+        </div>
+        <div class="col-md-4 text-md-end d-flex gap-2 justify-content-md-end flex-wrap">
+          <a href="faq.html" class="text-white-50 small text-decoration-none">FAQ</a>
+          <span class="text-white-50">·</span>
+          <a href="about.html" class="text-white-50 small text-decoration-none">Về chúng tôi</a>
+          <span class="text-white-50">·</span>
+          <a href="orders.html" class="text-white-50 small text-decoration-none">Đơn hàng</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Cart.updateCartUI();
+      const btn = document.getElementById('s404Btn');
+      const inp = document.getElementById('s404Input');
+      btn.addEventListener('click', () => { const q = inp.value.trim(); if (q) location.href = 'products.html?search=' + encodeURIComponent(q); });
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') btn.click(); });
+    });
+  </script>
+  <script src="js/footer-template.js"></script>
+</body>
+</html>
+
+
+
+

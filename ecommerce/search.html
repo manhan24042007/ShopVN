@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tìm kiếm - ShopVN</title>
+  <meta name="description" content="Tìm kiếm sản phẩm tại ShopVN" />
+  <link rel="manifest" href="manifest.json" /><meta name="theme-color" content="#0d6efd" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛍️</text></svg>" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/style.css?v=4" />
+  <style>
+    .highlight { background:#fff3cd; padding:0 2px; border-radius:3px; font-weight:600; }
+    .search-hero { background:linear-gradient(135deg,#f0f4ff,#e8f0fe); padding:2.5rem 0 2rem; }
+    .suggestion-chip { border-radius:20px; font-size:.82rem; cursor:pointer; transition:all .2s; }
+    .suggestion-chip:hover { background:#0d6efd; border-color:#0d6efd; color:#fff; }
+    .result-count { font-size:.85rem; color:#6c757d; }
+    .sort-bar { background:#f8f9fa; border-radius:10px; padding:.5rem 1rem; }
+    .load-more-sentinel { height:20px; }
+  </style>
+</head>
+<body style="min-height:100vh;display:flex;flex-direction:column">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow">
+    <div class="container">
+      <a class="navbar-brand fw-bold fs-4" href="index.html"><i class="bi bi-bag-heart-fill me-2"></i>ShopVN</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSearch"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarSearch">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="index.html">Trang chủ</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">Sản phẩm</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-2">
+          <a href="cart.html" class="btn btn-outline-light position-relative">
+            <i class="bi bi-cart3 fs-5"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount">0</span>
+          </a>
+          <div id="navAuthArea"></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Search Hero -->
+  <div class="search-hero">
+    <div class="container">
+      <div style="max-width:640px;margin:0 auto">
+        <h2 class="fw-bold mb-3 text-center">Tìm kiếm sản phẩm</h2>
+        <div class="input-group input-group-lg shadow-sm mb-3">
+          <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" class="form-control border-start-0 ps-0" id="mainSearchInput"
+                 placeholder="Nhập từ khóa tìm kiếm..." autocomplete="off" />
+          <button class="btn btn-primary px-4 fw-semibold" id="mainSearchBtn">Tìm</button>
+        </div>
+        <!-- Popular suggestions -->
+        <div class="d-flex flex-wrap gap-2 justify-content-center" id="suggestions">
+          <span class="text-muted small me-1">Gợi ý:</span>
+          <button class="btn btn-outline-primary btn-sm suggestion-chip" data-q="jacket">Áo khoác</button>
+          <button class="btn btn-outline-primary btn-sm suggestion-chip" data-q="laptop">Laptop</button>
+          <button class="btn btn-outline-primary btn-sm suggestion-chip" data-q="gold">Vàng</button>
+          <button class="btn btn-outline-primary btn-sm suggestion-chip" data-q="shirt">Áo sơ mi</button>
+          <button class="btn btn-outline-primary btn-sm suggestion-chip" data-q="earring">Bông tai</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container py-4 flex-grow-1">
+    <!-- Results toolbar -->
+    <div id="resultsToolbar" class="d-none mb-4">
+      <div class="sort-bar d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="result-count" id="resultCount"></div>
+        <select class="form-select form-select-sm" id="sortSelect" style="width:auto">
+          <option value="relevant">Liên quan nhất</option>
+          <option value="price-asc">Giá: Thấp → Cao</option>
+          <option value="price-desc">Giá: Cao → Thấp</option>
+          <option value="rating">Đánh giá cao nhất</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Initial state -->
+    <div id="initialState" class="text-center py-5">
+      <i class="bi bi-search fs-1 text-muted d-block mb-3 opacity-25"></i>
+      <h5 class="text-muted">Nhập từ khóa để bắt đầu tìm kiếm</h5>
+      <p class="text-muted small">Ví dụ: áo khoác, điện thoại, vòng cổ vàng...</p>
+    </div>
+
+    <!-- No results -->
+    <div id="noResults" class="text-center py-5 d-none">
+      <i class="bi bi-search fs-1 text-muted d-block mb-3 opacity-25"></i>
+      <h5 class="text-muted" id="noResultsMsg">Không tìm thấy kết quả</h5>
+      <p class="text-muted small">Thử các từ khóa khác hoặc kiểm tra chính tả</p>
+      <a href="products.html" class="btn btn-primary mt-2">Xem tất cả sản phẩm</a>
+    </div>
+
+    <!-- Loading -->
+    <div id="searchLoading" class="text-center py-5 d-none">
+      <div class="spinner-border text-primary"></div>
+      <p class="mt-2 text-muted">Đang tìm kiếm...</p>
+    </div>
+
+    <!-- Results grid (infinite scroll) -->
+    <div class="row g-3" id="searchGrid"></div>
+    <div id="loadMoreSentinel" class="load-more-sentinel"></div>
+    <div id="loadMoreBtn" class="text-center mt-4 d-none">
+      <button class="btn btn-outline-primary px-5" id="loadMoreTrigger">
+        <i class="bi bi-arrow-down me-2"></i>Xem thêm kết quả
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+    <div id="toastMsg" class="toast align-items-center border-0" role="alert">
+      <div class="d-flex"><div class="toast-body" id="toastBody"></div><button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button></div>
+    </div>
+  </div>
+
+  <footer class="bg-dark text-white py-4 mt-auto"><div class="container text-center"><p class="mb-0 text-muted small">&copy; 2026 ShopVN. All rights reserved.</p></div></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/cache.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/compare.js"></script>
+  <script src="js/minicart.js"></script>
+  <script src="js/notifications.js"></script>
+  <script>
+    const PAGE_SIZE = 8;
+    let allProducts   = [];
+    let results       = [];
+    let currentPage   = 0;
+    let currentQuery  = '';
+    let sortOrder     = 'relevant';
+    let isLoading     = false;
+
+    /* ── Highlight text ── */
+    function highlight(text, query) {
+      if (!query) return API.escapeHtml(text);
+      const esc = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return API.escapeHtml(text).replace(new RegExp(`(${esc})`, 'gi'),
+        '<mark class="highlight">$1</mark>');
+    }
+
+    /* ── Score relevance ── */
+    function score(p, q) {
+      const ql = q.toLowerCase();
+      let s = 0;
+      if (p.title.toLowerCase().includes(ql))       s += 3;
+      if (p.category.toLowerCase().includes(ql))    s += 2;
+      if (p.description.toLowerCase().includes(ql)) s += 1;
+      return s;
+    }
+
+    /* ── Run search ── */
+    function runSearch(query) {
+      currentQuery = query.trim();
+      currentPage  = 0;
+      results      = [];
+
+      if (!currentQuery) { showInitial(); return; }
+
+      // Add to history
+      if (typeof Search !== 'undefined') Search.addHistory(currentQuery);
+
+      const q = currentQuery.toLowerCase();
+      let matched = allProducts.filter(p =>
+        p.title.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q)
+      );
+
+      // Sort
+      switch (sortOrder) {
+        case 'price-asc':  matched.sort((a,b) => a.price - b.price); break;
+        case 'price-desc': matched.sort((a,b) => b.price - a.price); break;
+        case 'rating':     matched.sort((a,b) => b.rating.rate - a.rating.rate); break;
+        default:           matched.sort((a,b) => score(b, currentQuery) - score(a, currentQuery));
+      }
+
+      results = matched;
+      renderResults(true);
+    }
+
+    function renderResults(reset = false) {
+      const grid    = document.getElementById('searchGrid');
+      const toolbar = document.getElementById('resultsToolbar');
+      const initial = document.getElementById('initialState');
+      const noRes   = document.getElementById('noResults');
+      const loadBtn = document.getElementById('loadMoreBtn');
+
+      initial.classList.add('d-none');
+      document.getElementById('searchLoading').classList.add('d-none');
+
+      if (!results.length) {
+        grid.innerHTML = ''; toolbar.classList.add('d-none'); loadBtn.classList.add('d-none');
+        noRes.classList.remove('d-none');
+        document.getElementById('noResultsMsg').textContent = `Không tìm thấy kết quả cho "${currentQuery}"`;
+        return;
+      }
+
+      noRes.classList.add('d-none');
+      toolbar.classList.remove('d-none');
+
+      const start  = currentPage * PAGE_SIZE;
+      const end    = Math.min(start + PAGE_SIZE, results.length);
+      const paged  = results.slice(start, end);
+
+      document.getElementById('resultCount').innerHTML =
+        `Tìm thấy <strong>${results.length}</strong> kết quả cho "<strong>${API.escapeHtml(currentQuery)}</strong>"`;
+
+      const html = paged.map(p => {
+        const disc     = Math.floor(Math.random() * 20) + 5;
+        const oldPrice = (p.price * (1 + disc/100)).toFixed(2);
+        return `
+          <div class="col-6 col-md-4 col-lg-3 fade-in" data-id="${p.id}">
+            <div class="card product-card h-100">
+              <div class="card-img-wrapper">
+                <img referrerpolicy="no-referrer" src="${API.escapeHtml(p.image)}" alt="${API.escapeHtml(p.title)}" loading="lazy" />
+                <span class="badge-category ${API.getCategoryBadgeClass(p.category)}">${API.getCategoryLabel(p.category)}</span>
+                <span class="badge-sale badge bg-danger">-${disc}%</span>
+                <div class="card-overlay">
+                  <button class="overlay-btn" onclick="toggleWishlist(${p.id},this)" title="Yêu thích"><i class="bi bi-heart"></i></button>
+                  <button class="overlay-btn" onclick="Cart.add(${p.id},'${p.title.replace(/'/g,"\\'")}',${p.price},'${p.image}')" title="Thêm vào giỏ"><i class="bi bi-cart-plus"></i></button>
+                </div>
+              </div>
+              <div class="card-body d-flex flex-column">
+                <a href="product-detail.html?id=${p.id}" class="product-title">${highlight(p.title, currentQuery)}</a>
+                <div class="d-flex align-items-center gap-1 my-1">
+                  <div class="rating-stars">${API.renderStars(p.rating.rate)}</div>
+                  <span class="rating-count">(${p.rating.count})</span>
+                </div>
+                <div class="mt-auto d-flex align-items-center justify-content-between gap-1">
+                  <div>
+                    <span class="product-price">${API.formatPrice(p.price)}</span><br>
+                    <span class="product-price-old">${API.formatPrice(oldPrice)}</span>
+                  </div>
+                  <button class="btn btn-sm btn-primary" onclick="Cart.add(${p.id},'${p.title.replace(/'/g,"\\'")}',${p.price},'${p.image}')">
+                    <i class="bi bi-cart-plus me-1"></i>Thêm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+
+      if (reset) grid.innerHTML = html;
+      else grid.insertAdjacentHTML('beforeend', html);
+
+      currentPage++;
+      const hasMore = currentPage * PAGE_SIZE < results.length;
+      loadBtn.classList.toggle('d-none', !hasMore);
+    }
+
+    function showInitial() {
+      document.getElementById('initialState').classList.remove('d-none');
+      document.getElementById('noResults').classList.add('d-none');
+      document.getElementById('searchGrid').innerHTML = '';
+      document.getElementById('resultsToolbar').classList.add('d-none');
+      document.getElementById('loadMoreBtn').classList.add('d-none');
+    }
+
+    /* ── Init ── */
+    document.addEventListener('DOMContentLoaded', async () => {
+      Cart.updateCartUI();
+
+      // Check URL param
+      const urlQ = new URLSearchParams(location.search).get('q') || new URLSearchParams(location.search).get('search') || '';
+      if (urlQ) document.getElementById('mainSearchInput').value = urlQ;
+
+      // Load products
+      document.getElementById('searchLoading').classList.remove('d-none');
+      document.getElementById('initialState').classList.add('d-none');
+      try {
+        allProducts = await API.getAllProducts();
+        document.getElementById('searchLoading').classList.add('d-none');
+        if (urlQ) runSearch(urlQ);
+        else showInitial();
+      } catch {
+        document.getElementById('searchLoading').classList.add('d-none');
+        document.getElementById('initialState').innerHTML = '<div class="alert alert-danger">Lỗi tải dữ liệu. Vui lòng thử lại.</div>';
+      }
+
+      // Search button / Enter
+      const input = document.getElementById('mainSearchInput');
+      const doSearch = () => { const q = input.value.trim(); if(q) { history.replaceState(null,'',`search.html?q=${encodeURIComponent(q)}`); runSearch(q); } };
+      document.getElementById('mainSearchBtn').addEventListener('click', doSearch);
+      input.addEventListener('keydown', e => { if(e.key === 'Enter') doSearch(); });
+
+      // Suggestion chips
+      document.querySelectorAll('.suggestion-chip').forEach(btn => {
+        btn.addEventListener('click', () => { input.value = btn.dataset.q; doSearch(); });
+      });
+
+      // Sort
+      document.getElementById('sortSelect').addEventListener('change', function() {
+        sortOrder = this.value; if(currentQuery) runSearch(currentQuery);
+      });
+
+      // Load more button
+      document.getElementById('loadMoreTrigger').addEventListener('click', () => renderResults(false));
+
+      // Intersection Observer for auto-load
+      const sentinel = document.getElementById('loadMoreSentinel');
+      const observer = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting && currentQuery && currentPage * PAGE_SIZE < results.length && !isLoading) {
+          isLoading = true;
+          setTimeout(() => { renderResults(false); isLoading = false; }, 400);
+        }
+      }, { threshold: 0.1 });
+      observer.observe(sentinel);
+    });
+  </script>
+  <script src="js/footer-template.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+

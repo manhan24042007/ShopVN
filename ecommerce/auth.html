@@ -1,0 +1,273 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập / Đăng ký - ShopVN</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/style.css?v=4" />
+  <style>
+    body { background: linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; display:flex; align-items:center; padding:1.5rem 0; }
+    .auth-card { border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,.3); max-width:900px; margin:0 auto; overflow:hidden; }
+    .auth-banner { background:linear-gradient(160deg,#0d6efd,#0a58ca 60%,#7c3aed); color:#fff; padding:3rem 2rem; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .auth-tab-btn { border:none; background:none; font-size:1rem; font-weight:600; padding:.75rem 2rem; color:#6c757d; border-bottom:3px solid transparent; transition:all .2s; cursor:pointer; }
+    .auth-tab-btn.active { color:#0d6efd; border-bottom-color:#0d6efd; }
+    .pwd-toggle { position:absolute; right:.75rem; top:50%; transform:translateY(-50%); border:none; background:none; color:#adb5bd; cursor:pointer; z-index:5; }
+    .strength-bar { height:4px; border-radius:2px; transition:all .3s; }
+    .social-btn { border:1px solid #dee2e6; border-radius:10px; padding:.55rem 1rem; display:flex; align-items:center; justify-content:center; gap:.5rem; font-weight:500; cursor:pointer; transition:all .2s; text-decoration:none; color:#333; background:#fff; }
+    .social-btn:hover { border-color:#0d6efd; color:#0d6efd; }
+  </style>
+</head>
+<body>
+<div class="container px-3">
+  <div class="auth-card bg-white row g-0">
+
+    <!-- Banner -->
+    <div class="col-lg-5 auth-banner d-none d-lg-flex">
+      <div class="text-center">
+        <i class="bi bi-bag-heart-fill" style="font-size:4rem"></i>
+        <h2 class="fw-bold mt-3 mb-2">ShopVN</h2>
+        <p class="opacity-75 mb-4">Nền tảng mua sắm trực tuyến hàng đầu Việt Nam</p>
+        <div class="d-flex flex-column gap-3 text-start">
+          <div class="d-flex align-items-center gap-3">
+            <span class="rounded-circle bg-white bg-opacity-25 d-flex align-items-center justify-content-center" style="width:40px;height:40px;flex-shrink:0"><i class="bi bi-truck"></i></span>
+            <div><div class="fw-semibold">Giao hàng miễn phí</div><small class="opacity-75">Cho đơn từ $50</small></div>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <span class="rounded-circle bg-white bg-opacity-25 d-flex align-items-center justify-content-center" style="width:40px;height:40px;flex-shrink:0"><i class="bi bi-shield-check"></i></span>
+            <div><div class="fw-semibold">Mua sắm an toàn</div><small class="opacity-75">Bảo mật thông tin 100%</small></div>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <span class="rounded-circle bg-white bg-opacity-25 d-flex align-items-center justify-content-center" style="width:40px;height:40px;flex-shrink:0"><i class="bi bi-gift"></i></span>
+            <div><div class="fw-semibold">Ưu đãi thành viên</div><small class="opacity-75">Giảm giá độc quyền mỗi ngày</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Panel -->
+    <div class="col-lg-7">
+      <div class="p-4 p-md-5">
+        <div class="text-center mb-4 d-lg-none">
+          <a href="index.html" class="text-primary fw-bold fs-4 text-decoration-none"><i class="bi bi-bag-heart-fill me-2"></i>ShopVN</a>
+        </div>
+
+        <!-- Tabs -->
+        <div class="d-flex border-bottom mb-4">
+          <button class="auth-tab-btn active" id="tabLogin" onclick="switchTab('login')"><i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập</button>
+          <button class="auth-tab-btn" id="tabRegister" onclick="switchTab('register')"><i class="bi bi-person-plus me-2"></i>Đăng ký</button>
+        </div>
+        <div id="authAlert" class="d-none mb-3"></div>
+
+        <!-- Login Form -->
+        <form id="loginForm" novalidate>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Email</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope text-muted"></i></span>
+              <input type="email" class="form-control border-start-0 ps-0" id="loginEmail" placeholder="email@example.com" required autocomplete="email" />
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="d-flex justify-content-between mb-1">
+              <label class="form-label fw-semibold mb-0">Mật khẩu</label>
+              <button type="button" class="btn btn-link btn-sm p-0 text-primary" onclick="showForgot()">Quên mật khẩu?</button>
+            </div>
+            <div class="input-group position-relative">
+              <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
+              <input type="password" class="form-control border-start-0 ps-0 pe-5" id="loginPassword" placeholder="Nhập mật khẩu..." required autocomplete="current-password" />
+              <button type="button" class="pwd-toggle" onclick="togglePwd('loginPassword',this)"><i class="bi bi-eye"></i></button>
+            </div>
+          </div>
+          <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" id="rememberMe" />
+            <label class="form-check-label" for="rememberMe">Ghi nhớ đăng nhập</label>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold mb-3" id="loginBtn">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập
+          </button>
+          <div class="divider-or my-3">hoặc</div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><a href="#" class="social-btn" onclick="event.preventDefault();showAlert('Tính năng đang phát triển.','info')"><i class="bi bi-google text-danger"></i>Google</a></div>
+            <div class="col-6"><a href="#" class="social-btn" onclick="event.preventDefault();showAlert('Tính năng đang phát triển.','info')"><i class="bi bi-facebook text-primary"></i>Facebook</a></div>
+          </div>
+          <p class="text-center text-muted small">Chưa có tài khoản? <button type="button" class="btn btn-link btn-sm p-0" onclick="switchTab('register')">Đăng ký ngay</button></p>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" class="d-none" novalidate>
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
+                <input type="text" class="form-control border-start-0 ps-0" id="regName" placeholder="Nguyễn Văn A" required />
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope text-muted"></i></span>
+                <input type="email" class="form-control border-start-0 ps-0" id="regEmail" placeholder="email@example.com" required autocomplete="email" />
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Số điện thoại</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-telephone text-muted"></i></span>
+                <input type="tel" class="form-control border-start-0 ps-0" id="regPhone" placeholder="0901 234 567" pattern="[0-9]{10,11}" />
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Mật khẩu <span class="text-danger">*</span></label>
+              <div class="input-group position-relative">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
+                <input type="password" class="form-control border-start-0 ps-0 pe-5" id="regPassword" placeholder="Ít nhất 6 ký tự" required minlength="6" autocomplete="new-password" oninput="checkStrength(this.value)" />
+                <button type="button" class="pwd-toggle" onclick="togglePwd('regPassword',this)"><i class="bi bi-eye"></i></button>
+              </div>
+              <div class="d-flex gap-1 mt-1" id="strengthBars">
+                <div class="strength-bar flex-fill bg-secondary opacity-25" id="sb1"></div>
+                <div class="strength-bar flex-fill bg-secondary opacity-25" id="sb2"></div>
+                <div class="strength-bar flex-fill bg-secondary opacity-25" id="sb3"></div>
+                <div class="strength-bar flex-fill bg-secondary opacity-25" id="sb4"></div>
+              </div>
+              <small id="strengthLabel" class="text-muted"></small>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Xác nhận mật khẩu <span class="text-danger">*</span></label>
+              <div class="input-group position-relative">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock-fill text-muted"></i></span>
+                <input type="password" class="form-control border-start-0 ps-0 pe-5" id="regConfirm" placeholder="Nhập lại mật khẩu" required />
+                <button type="button" class="pwd-toggle" onclick="togglePwd('regConfirm',this)"><i class="bi bi-eye"></i></button>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="agreeTerms" required />
+                <label class="form-check-label" for="agreeTerms">Tôi đồng ý <a href="#" class="text-primary">Điều khoản</a> & <a href="#" class="text-primary">Bảo mật</a> <span class="text-danger">*</span></label>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold mt-4 mb-3" id="registerBtn">
+            <i class="bi bi-person-plus me-2"></i>Tạo tài khoản
+          </button>
+          <p class="text-center text-muted small">Đã có tài khoản? <button type="button" class="btn btn-link btn-sm p-0" onclick="switchTab('login')">Đăng nhập</button></p>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="text-center mt-3">
+    <a href="index.html" class="text-white-50 text-decoration-none small"><i class="bi bi-arrow-left me-1"></i>Quay lại trang chủ</a>
+  </div>
+</div>
+
+<!-- Forgot Modal -->
+<div class="modal fade" id="forgotModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold"><i class="bi bi-key me-2 text-primary"></i>Quên mật khẩu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small">Nhập email đã đăng ký để nhận hướng dẫn đặt lại mật khẩu.</p>
+        <div class="input-group"><span class="input-group-text"><i class="bi bi-envelope"></i></span>
+          <input type="email" class="form-control" id="forgotEmail" placeholder="email@example.com" /></div>
+        <div id="forgotMsg" class="mt-2"></div>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button class="btn btn-primary" onclick="sendForgot()"><i class="bi bi-send me-1"></i>Gửi yêu cầu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (Auth.isLoggedIn()) { const p = new URLSearchParams(location.search); location.href = p.get('redirect') || 'index.html'; return; }
+    if (new URLSearchParams(location.search).get('tab') === 'register') switchTab('register');
+  });
+
+  function switchTab(t) {
+    const isLogin = t === 'login';
+    document.getElementById('loginForm').classList.toggle('d-none', !isLogin);
+    document.getElementById('registerForm').classList.toggle('d-none', isLogin);
+    document.getElementById('tabLogin').classList.toggle('active', isLogin);
+    document.getElementById('tabRegister').classList.toggle('active', !isLogin);
+    clearAlert();
+  }
+
+  function showAlert(msg, type = 'danger') {
+    const el = document.getElementById('authAlert');
+    el.className = `alert alert-${type} d-flex align-items-center gap-2 mb-3`;
+    el.innerHTML = `<i class="bi bi-${type==='danger'?'exclamation-circle':'check-circle'}-fill flex-shrink-0"></i><span>${msg}</span>`;
+  }
+  function clearAlert() { const el = document.getElementById('authAlert'); el.className='d-none'; el.innerHTML=''; }
+
+  document.getElementById('loginForm').addEventListener('submit', e => {
+    e.preventDefault(); clearAlert();
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang đăng nhập...';
+    setTimeout(() => {
+      const r = Auth.login({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPassword').value });
+      btn.disabled = false; btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập';
+      if (r.ok) { showAlert(`Chào mừng trở lại <strong>${r.user.fullName}</strong>!`, 'success'); setTimeout(() => { const p = new URLSearchParams(location.search); location.href = p.get('redirect') || 'index.html'; }, 800); }
+      else showAlert(r.error);
+    }, 600);
+  });
+
+  document.getElementById('registerForm').addEventListener('submit', e => {
+    e.preventDefault(); clearAlert();
+    const pwd = document.getElementById('regPassword').value;
+    const cfm = document.getElementById('regConfirm').value;
+    if (pwd !== cfm) { showAlert('Mật khẩu xác nhận không khớp.'); return; }
+    if (!document.getElementById('agreeTerms').checked) { showAlert('Bạn cần đồng ý điều khoản sử dụng.'); return; }
+    const btn = document.getElementById('registerBtn');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang tạo tài khoản...';
+    setTimeout(() => {
+      const r = Auth.register({ fullName: document.getElementById('regName').value, email: document.getElementById('regEmail').value, phone: document.getElementById('regPhone').value, password: pwd });
+      btn.disabled = false; btn.innerHTML = '<i class="bi bi-person-plus me-2"></i>Tạo tài khoản';
+      if (r.ok) { showAlert(`Chào mừng <strong>${r.user.fullName}</strong>! Tài khoản đã tạo thành công.`, 'success'); setTimeout(() => location.href = 'index.html', 900); }
+      else showAlert(r.error);
+    }, 700);
+  });
+
+  function checkStrength(pwd) {
+    let s = 0;
+    if (pwd.length >= 6) s++; if (pwd.length >= 10) s++;
+    if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) s++;
+    if (/[0-9]/.test(pwd) && /[^A-Za-z0-9]/.test(pwd)) s++;
+    const colors = ['bg-danger','bg-warning','bg-info','bg-success'];
+    const labels = ['Rất yếu','Yếu','Trung bình','Mạnh'];
+    [1,2,3,4].forEach(i => { const b = document.getElementById('sb'+i); b.className = `strength-bar flex-fill ${i<=s ? colors[s-1] : 'bg-secondary opacity-25'}`; });
+    const sl = document.getElementById('strengthLabel');
+    sl.textContent = pwd.length > 0 ? (labels[s-1]||'') : '';
+    sl.className = s > 0 ? `small text-${['danger','warning','info','success'][s-1]}` : 'small text-muted';
+  }
+
+  function togglePwd(id, btn) {
+    const inp = document.getElementById(id); const ic = btn.querySelector('i');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    ic.classList.toggle('bi-eye', inp.type === 'password'); ic.classList.toggle('bi-eye-slash', inp.type === 'text');
+  }
+
+  function showForgot() { new bootstrap.Modal(document.getElementById('forgotModal')).show(); }
+
+  function sendForgot() {
+    const email = document.getElementById('forgotEmail').value.trim();
+    const msg = document.getElementById('forgotMsg');
+    if (!email) { msg.innerHTML = '<div class="alert alert-danger py-2 small">Vui lòng nhập email.</div>'; return; }
+    msg.innerHTML = '<div class="alert alert-success py-2 small"><i class="bi bi-check-circle me-2"></i>Nếu email tồn tại, hướng dẫn đặt lại đã được gửi!</div>';
+  }
+</script>
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,379 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - ShopVN</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/style.css?v=4" />
+  <style>
+    body { background:#f0f2f5; }
+    .admin-sidebar { width:240px; min-height:100vh; background:linear-gradient(180deg,#1e3a5f,#0d2137); position:fixed; top:0; left:0; z-index:100; transition:transform .3s; display:flex; flex-direction:column; }
+    .admin-sidebar .brand { padding:1.5rem 1.25rem 1rem; border-bottom:1px solid rgba(255,255,255,.1); }
+    .admin-sidebar .nav-link { color:rgba(255,255,255,.7); padding:.65rem 1.25rem; border-radius:8px; margin:.1rem .5rem; font-size:.88rem; font-weight:500; transition:all .2s; display:flex; align-items:center; gap:.6rem; }
+    .admin-sidebar .nav-link:hover, .admin-sidebar .nav-link.active { background:rgba(255,255,255,.12); color:#fff; }
+    .admin-sidebar .nav-link i { width:18px; text-align:center; }
+    .admin-sidebar .sidebar-bottom { margin-top:auto; padding:1rem .75rem 1rem; border-top:1px solid rgba(255,255,255,.1); }
+    .admin-sidebar .sidebar-card { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:.9rem; color:#fff; }
+    .admin-sidebar .sidebar-card .small-label { color:rgba(255,255,255,.72); font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; }
+    .admin-sidebar .sidebar-card .inline-btn { display:flex; align-items:center; justify-content:center; gap:.4rem; width:100%; margin-top:.7rem; border-radius:10px; padding:.55rem .8rem; background:rgba(255,255,255,.12); color:#fff; text-decoration:none; font-size:.78rem; }
+    .admin-sidebar .sidebar-card .inline-btn:hover { background:rgba(255,255,255,.2); }
+    .admin-sidebar .sidebar-tools { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; margin-top:.8rem; }
+    .admin-sidebar .sidebar-tools .tool-btn { display:flex; flex-direction:column; align-items:center; gap:.25rem; padding:.7rem .45rem; border-radius:10px; background:rgba(255,255,255,.08); color:#fff; text-decoration:none; font-size:.72rem; }
+    .admin-sidebar .sidebar-tools .tool-btn i { font-size:1rem; }
+    .admin-sidebar .sidebar-tools .tool-btn:hover { background:rgba(255,255,255,.18); }
+    .admin-sidebar .sidebar-stats { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; margin-top:.8rem; }
+    .admin-sidebar .sidebar-stats .stat-pill { background:rgba(255,255,255,.08); border-radius:10px; padding:.6rem; text-align:center; color:#fff; }
+    .admin-sidebar .sidebar-stats .stat-pill strong { display:block; font-size:1rem; }
+    .admin-sidebar .sidebar-stats .stat-pill span { display:block; font-size:.68rem; color:rgba(255,255,255,.72); }
+    .admin-main { margin-left:240px; padding:1.5rem; min-height:100vh; }
+    .stat-card { border-radius:16px; border:none; transition:transform .2s; }
+    .stat-card:hover { transform:translateY(-3px); }
+    .stat-icon { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.4rem; }
+    .stat-trend-up   { color:#198754; font-size:.8rem; }
+    .stat-trend-down { color:#dc3545; font-size:.8rem; }
+    .mini-chart { height:48px; display:flex; align-items:flex-end; gap:3px; }
+    .mini-chart-bar { flex:1; border-radius:3px 3px 0 0; background:rgba(13,110,253,.2); transition:height .3s; }
+    .mini-chart-bar.active { background:#0d6efd; }
+    .top-product-img { width:44px; height:44px; object-fit:contain; background:#f8f9fa; border-radius:8px; padding:4px; }
+    @media(max-width:991px){ .admin-sidebar{transform:translateX(-100%);} .admin-main{margin-left:0;} .admin-sidebar.show{transform:translateX(0);} }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="admin-sidebar" id="adminSidebar">
+    <div class="brand">
+      <a href="index.html" class="text-white text-decoration-none fw-bold fs-5 d-flex align-items-center gap-2">
+        <i class="bi bi-bag-heart-fill text-primary"></i> ShopVN
+      </a>
+      <div class="text-white-50 mt-1" style="font-size:.75rem">Admin Dashboard</div>
+    </div>
+    <nav class="py-2">
+      <div class="px-3 py-1 text-white-50 mb-1" style="font-size:.7rem;letter-spacing:.08em;text-transform:uppercase">Tổng quan</div>
+      <a href="#" class="nav-link active" data-section="dashboard"><i class="bi bi-grid-1x2"></i>Dashboard</a>
+      <a href="#" class="nav-link" data-section="products"><i class="bi bi-box-seam"></i>Sản phẩm</a>
+      <a href="#" class="nav-link" data-section="orders"><i class="bi bi-bag-check"></i>Đơn hàng</a>
+      <a href="#" class="nav-link" data-section="customers"><i class="bi bi-people"></i>Khách hàng</a>
+
+      <div class="px-3 py-1 text-white-50 mb-1 mt-2" style="font-size:.7rem;letter-spacing:.08em;text-transform:uppercase">Chức năng</div>
+      <a href="#" class="nav-link" data-section="analytics"><i class="bi bi-bar-chart-line"></i>Thống kê</a>
+      <a href="#" class="nav-link" data-section="products"><i class="bi bi-truck"></i>Quản lý vận chuyển</a>
+      <a href="#" class="nav-link" data-section="customers"><i class="bi bi-gift"></i>Khuyến mãi</a>
+      <a href="#" class="nav-link" data-section="analytics"><i class="bi bi-shield-check"></i>Phân quyền</a>
+
+      <div class="px-3 py-1 text-white-50 mb-1 mt-2" style="font-size:.7rem;letter-spacing:.08em;text-transform:uppercase">Cài đặt</div>
+      <a href="#" class="nav-link" data-section="analytics"><i class="bi bi-gear"></i>Cấu hình</a>
+      <a href="index.html" class="nav-link"><i class="bi bi-arrow-left-circle"></i>Về trang chủ</a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-card">
+        <div class="small-label">Tác vụ nhanh</div>
+        <div class="fw-semibold mt-2">Hệ thống bán hàng</div>
+        <div class="text-white-50 small mt-1">Quản lý đơn hàng, sản phẩm, báo cáo và khuyến mãi trong cùng một nơi.</div>
+
+        <div class="sidebar-stats">
+          <div class="stat-pill"><strong>142</strong><span>Đơn mới</span></div>
+          <div class="stat-pill"><strong>19</strong><span>Khuyến mãi</span></div>
+          <div class="stat-pill"><strong>97%</strong><span>Hoàn tất</span></div>
+          <div class="stat-pill"><strong>08</strong><span>Chờ xử lý</span></div>
+        </div>
+
+        <div class="sidebar-tools">
+          <a href="#" class="tool-btn" data-section="orders"><i class="bi bi-bag-check"></i><span>Đơn hàng</span></a>
+          <a href="#" class="tool-btn" data-section="products"><i class="bi bi-box-seam"></i><span>Sản phẩm</span></a>
+          <a href="#" class="tool-btn" data-section="customers"><i class="bi bi-people"></i><span>Khách hàng</span></a>
+          <a href="#" class="tool-btn" data-section="analytics"><i class="bi bi-bar-chart-line"></i><span>Thống kê</span></a>
+        </div>
+        <a href="#" class="inline-btn" data-section="orders"><i class="bi bi-lightning-charge"></i>Đi tới quản trị</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="admin-main">
+    <!-- Top bar -->
+    <div class="d-flex align-items-center justify-content-between mb-4 bg-white rounded-3 p-3 shadow-sm">
+      <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-sm btn-outline-secondary d-lg-none" onclick="document.getElementById('adminSidebar').classList.toggle('show')">
+          <i class="bi bi-list fs-5"></i>
+        </button>
+        <h5 class="mb-0 fw-bold" id="adminPageTitle">Dashboard</h5>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <span class="text-muted small"><i class="bi bi-calendar3 me-1"></i>01/08/2026</span>
+        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width:36px;height:36px">A</div>
+      </div>
+    </div>
+
+    <!-- Sections -->
+    <div id="sec-dashboard">
+
+      <!-- Stats -->
+      <div class="row g-3 mb-4" id="statsCards"></div>
+
+      <!-- Charts row -->
+      <div class="row g-3 mb-4">
+        <div class="col-lg-8">
+          <div class="card border-0 shadow-sm" style="border-radius:16px">
+            <div class="card-header bg-white border-0 pt-4 px-4 pb-2 d-flex justify-content-between align-items-center">
+              <h6 class="fw-bold mb-0">Doanh thu 7 ngày qua</h6>
+              <span class="badge bg-primary-subtle text-primary">Tuần này</span>
+            </div>
+            <div class="card-body px-4 pb-4">
+              <div id="revenueChart" class="d-flex align-items-flex-end gap-1" style="height:160px"></div>
+              <div id="chartLabels" class="d-flex gap-1 mt-1" style="font-size:.72rem;color:#adb5bd"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-sm h-100" style="border-radius:16px">
+            <div class="card-header bg-white border-0 pt-4 px-4 pb-2">
+              <h6 class="fw-bold mb-0">Phân bổ danh mục</h6>
+            </div>
+            <div class="card-body px-4" id="categoryStats"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top products + Recent orders -->
+      <div class="row g-3">
+        <div class="col-lg-6">
+          <div class="card border-0 shadow-sm" style="border-radius:16px">
+            <div class="card-header bg-white border-0 pt-4 px-4 pb-2">
+              <h6 class="fw-bold mb-0"><i class="bi bi-trophy me-2 text-warning"></i>Top sản phẩm bán chạy</h6>
+            </div>
+            <div class="card-body p-0" id="topProducts"></div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card border-0 shadow-sm" style="border-radius:16px">
+            <div class="card-header bg-white border-0 pt-4 px-4 pb-2">
+              <h6 class="fw-bold mb-0"><i class="bi bi-clock-history me-2 text-primary"></i>Đơn hàng gần đây</h6>
+            </div>
+            <div class="card-body p-0" id="recentOrders"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Other sections (placeholder) -->
+    <div id="sec-products" class="d-none">
+      <div class="card border-0 shadow-sm" style="border-radius:16px">
+        <div class="card-header bg-white border-0 pt-4 px-4 pb-2 d-flex justify-content-between">
+          <h6 class="fw-bold mb-0">Quản lý sản phẩm</h6>
+          <button class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Thêm sản phẩm</button>
+        </div>
+        <div class="card-body p-0" id="productTableWrap"></div>
+      </div>
+    </div>
+    <div id="sec-orders" class="d-none">
+      <div class="alert alert-info"><i class="bi bi-info-circle me-2"></i>Xem đầy đủ tại <a href="orders.html">orders.html</a></div>
+    </div>
+    <div id="sec-customers" class="d-none">
+      <div class="card border-0 shadow-sm p-4" style="border-radius:16px" id="customerTable"></div>
+    </div>
+    <div id="sec-analytics" class="d-none">
+      <div class="card border-0 shadow-sm p-4 text-center" style="border-radius:16px">
+        <i class="bi bi-bar-chart-line fs-1 text-muted opacity-25 d-block mb-3"></i>
+        <h5 class="text-muted">Tính năng analytics đang được phát triển</h5>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+    <div id="toastMsg" class="toast align-items-center border-0" role="alert">
+      <div class="d-flex"><div class="toast-body" id="toastBody"></div><button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+    const STATS = [
+      { label:'Doanh thu tháng', value:'$12,480', trend:'+18%', up:true, icon:'bi-currency-dollar', color:'bg-primary', light:'bg-primary bg-opacity-10 text-primary' },
+      { label:'Đơn hàng mới',    value:'142',     trend:'+7%',  up:true, icon:'bi-bag-check',      color:'bg-success', light:'bg-success bg-opacity-10 text-success' },
+      { label:'Khách hàng',      value:'1,024',   trend:'+12%', up:true, icon:'bi-people',          color:'bg-info',    light:'bg-info bg-opacity-10 text-info' },
+      { label:'Tỉ lệ chuyển đổi','value':'3.2%',  trend:'-0.4%',up:false,icon:'bi-percent',         color:'bg-warning', light:'bg-warning bg-opacity-10 text-warning' },
+    ];
+    const REVENUE = [320,480,290,610,540,780,920];
+    const DAYS    = ['T2','T3','T4','T5','T6','T7','CN'];
+    const CAT_STATS = [
+      { label:'Điện tử',       pct:38, color:'#0d6efd' },
+      { label:'Thời trang Nam',pct:25, color:'#198754' },
+      { label:'Thời trang Nữ',pct:22, color:'#f5576c' },
+      { label:'Trang sức',    pct:15, color:'#ffc107' },
+    ];
+    const RECENT_ORDERS = [
+      { id:'SVN001', customer:'Nguyễn Minh Tuấn', total:'$109.95', status:'delivered',  statusCls:'text-success' },
+      { id:'SVN002', customer:'Trần Thị Lan',      total:'$55.99',  status:'shipped',    statusCls:'text-info'    },
+      { id:'SVN003', customer:'Phạm Văn Đức',      total:'$695.00', status:'processing', statusCls:'text-primary' },
+      { id:'SVN004', customer:'Lê Thị Hoa',        total:'$19.99',  status:'cancelled',  statusCls:'text-danger'  },
+    ];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Sidebar nav
+      document.querySelectorAll('.admin-sidebar .nav-link[data-section]').forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          document.querySelectorAll('.admin-sidebar .nav-link').forEach(l => l.classList.remove('active'));
+          a.classList.add('active');
+          document.querySelectorAll('[id^="sec-"]').forEach(s => s.classList.add('d-none'));
+          const sec = document.getElementById('sec-' + a.dataset.section);
+          if (sec) sec.classList.remove('d-none');
+          document.getElementById('adminPageTitle').textContent = a.textContent.trim();
+          if (a.dataset.section === 'products') renderProductTable();
+          if (a.dataset.section === 'customers') renderCustomers();
+        });
+      });
+
+      renderStats();
+      renderRevenueChart();
+      renderCategoryStats();
+      await renderTopProducts();
+      renderRecentOrders();
+    });
+
+    function renderStats() {
+      document.getElementById('statsCards').innerHTML = STATS.map(s => `
+        <div class="col-6 col-xl-3">
+          <div class="card stat-card shadow-sm h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+              <div class="stat-icon ${s.light}"><i class="bi ${s.icon} fs-4"></i></div>
+              <div class="flex-grow-1">
+                <div class="text-muted small">${s.label}</div>
+                <div class="fw-bold fs-5 mb-0">${s.value}</div>
+                <div class="${s.up ? 'stat-trend-up' : 'stat-trend-down'}">
+                  <i class="bi bi-arrow-${s.up ? 'up' : 'down'}-right me-1"></i>${s.trend} so với tháng trước
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`).join('');
+    }
+
+    function renderRevenueChart() {
+      const max = Math.max(...REVENUE);
+      const chart = document.getElementById('revenueChart');
+      const labels = document.getElementById('chartLabels');
+      chart.innerHTML = REVENUE.map((v, i) => `
+        <div class="flex-fill d-flex flex-column align-items-center justify-content-end" style="height:100%">
+          <div class="w-100 rounded-2 position-relative" title="$${v}"
+               style="height:${(v/max*100).toFixed(1)}%;background:${i===6?'#0d6efd':'rgba(13,110,253,.25)'};border-radius:6px 6px 0 0;transition:height .6s;cursor:default"
+               onmouseenter="this.style.background='#0d6efd'" onmouseleave="this.style.background='${i===6?'#0d6efd':'rgba(13,110,253,.25)'}'">
+          </div>
+        </div>`).join('');
+      labels.innerHTML = DAYS.map((d, i) => `<div class="flex-fill text-center" style="${i===6?'color:#0d6efd;font-weight:600':''}">${d}</div>`).join('');
+    }
+
+    function renderCategoryStats() {
+      document.getElementById('categoryStats').innerHTML = CAT_STATS.map(c => `
+        <div class="mb-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span class="small fw-semibold">${c.label}</span>
+            <span class="small text-muted">${c.pct}%</span>
+          </div>
+          <div class="progress" style="height:8px;border-radius:4px">
+            <div class="progress-bar" style="width:${c.pct}%;background:${c.color};border-radius:4px"></div>
+          </div>
+        </div>`).join('');
+    }
+
+    async function renderTopProducts() {
+      const el = document.getElementById('topProducts');
+      try {
+        const products = await API.getLimitedProducts(5);
+        el.innerHTML = products.map((p, i) => `
+          <div class="d-flex align-items-center gap-3 px-4 py-3 border-bottom">
+            <span class="fw-bold text-muted" style="width:20px">#${i+1}</span>
+            <img referrerpolicy="no-referrer" src="${p.image}" alt="" class="top-product-img" />
+            <div class="flex-grow-1 min-w-0">
+              <div class="fw-semibold small text-truncate">${API.escapeHtml(p.title)}</div>
+              <div class="text-muted" style="font-size:.75rem">${API.getCategoryLabel(p.category)}</div>
+            </div>
+            <div class="text-end flex-shrink-0">
+              <div class="fw-bold text-primary">${API.formatPrice(p.price)}</div>
+              <div class="text-muted" style="font-size:.72rem">${Math.floor(Math.random()*100)+20} bán</div>
+            </div>
+          </div>`).join('');
+      } catch { el.innerHTML = '<div class="px-4 py-3 text-muted small">Không tải được dữ liệu.</div>'; }
+    }
+
+    function renderRecentOrders() {
+      const STATUS = { delivered:'success', shipped:'info', processing:'primary', cancelled:'danger' };
+      document.getElementById('recentOrders').innerHTML = RECENT_ORDERS.map(o => `
+        <div class="d-flex align-items-center gap-3 px-4 py-3 border-bottom">
+          <div class="flex-grow-1">
+            <div class="fw-semibold small">${o.customer}</div>
+            <div class="text-muted" style="font-size:.75rem">#${o.id}</div>
+          </div>
+          <div class="text-end">
+            <div class="fw-bold">${o.total}</div>
+            <span class="badge bg-${STATUS[o.status]}-subtle text-${STATUS[o.status]} border border-${STATUS[o.status]}-subtle" style="font-size:.7rem">${o.status}</span>
+          </div>
+        </div>`).join('');
+    }
+
+    async function renderProductTable() {
+      const el = document.getElementById('productTableWrap');
+      el.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary spinner-border-sm"></div></div>';
+      try {
+        const products = await API.getAllProducts();
+        el.innerHTML = `<div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light"><tr>
+              <th>Sản phẩm</th><th>Danh mục</th><th>Giá</th><th>Rating</th><th>Hành động</th>
+            </tr></thead>
+            <tbody>${products.map(p => `
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img referrerpolicy="no-referrer" src="${p.image}" alt="" style="width:36px;height:36px;object-fit:contain;background:#f8f9fa;border-radius:6px;padding:2px" />
+                    <span class="fw-semibold small">${API.escapeHtml(p.title.substring(0,40))}...</span>
+                  </div>
+                </td>
+                <td><span class="badge ${API.getCategoryBadgeClass(p.category)}">${API.getCategoryLabel(p.category)}</span></td>
+                <td class="fw-bold text-primary">${API.formatPrice(p.price)}</td>
+                <td><span class="text-warning">★</span> ${p.rating.rate} <span class="text-muted small">(${p.rating.count})</span></td>
+                <td>
+                  <a href="product-detail.html?id=${p.id}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-eye"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary me-1" onclick="showToast('Tính năng chỉnh sửa đang phát triển.','info')"><i class="bi bi-pencil"></i></button>
+                  <button class="btn btn-sm btn-outline-danger" onclick="showToast('Đã xóa sản phẩm (demo).','danger')"><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>`).join('')}
+            </tbody>
+          </table></div>`;
+      } catch { el.innerHTML = '<div class="p-4 text-danger">Không tải được sản phẩm.</div>'; }
+    }
+
+    function renderCustomers() {
+      const users = JSON.parse(localStorage.getItem('shopvn_users') || '[]');
+      const el = document.getElementById('customerTable');
+      if (!users.length) { el.innerHTML = '<div class="text-center text-muted py-4"><i class="bi bi-people fs-1 d-block mb-2 opacity-25"></i>Chưa có khách hàng nào đăng ký.</div>'; return; }
+      el.innerHTML = `<h6 class="fw-bold mb-3">Danh sách khách hàng (${users.length})</h6>
+        <div class="table-responsive"><table class="table table-hover">
+          <thead class="table-light"><tr><th>Tên</th><th>Email</th><th>SĐT</th><th>Ngày đăng ký</th></tr></thead>
+          <tbody>${users.map(u => `<tr>
+            <td><div class="d-flex align-items-center gap-2"><img referrerpolicy="no-referrer" src="${u.avatar}" width="32" height="32" class="rounded-circle" />${API.escapeHtml(u.fullName)}</div></td>
+            <td>${API.escapeHtml(u.email)}</td>
+            <td>${u.phone || '—'}</td>
+            <td>${new Date(u.createdAt).toLocaleDateString('vi-VN')}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>`;
+    }
+
+    window.showToast = function(msg, type = 'success') {
+      const el = document.getElementById('toastMsg'); const body = document.getElementById('toastBody');
+      if (!el || !body) return; el.className = `toast align-items-center text-bg-${type} border-0`;
+      body.innerHTML = msg; bootstrap.Toast.getOrCreateInstance(el, {delay:3000}).show();
+    };
+  </script>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,207 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>FAQ - Câu hỏi thường gặp | ShopVN</title>
+  <meta name="description" content="Giải đáp các câu hỏi thường gặp tại ShopVN về đặt hàng, giao hàng, đổi trả và thanh toán."/>
+  <link rel="manifest" href="manifest.json"/><meta name="theme-color" content="#0d6efd"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛍️</text></svg>" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="css/style.css?v=4"/>
+  <style>
+    .faq-hero{background:linear-gradient(135deg,#f0f4ff,#e8f0fe);padding:3rem 0 2rem}
+    .faq-cat-btn{border-radius:20px;font-size:.85rem;padding:.4rem 1rem;transition:all .2s}
+    .faq-cat-btn.active{background:#0d6efd;border-color:#0d6efd;color:#fff}
+    .accordion-button:not(.collapsed){background:#e8f0fe;color:#0d6efd;box-shadow:none}
+    .accordion-button:focus{box-shadow:none}
+    .accordion-item{border:1px solid #e9ecef;border-radius:10px!important;margin-bottom:.75rem;overflow:hidden}
+    .contact-card{border-radius:16px;transition:transform .2s,box-shadow .2s}
+    .contact-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1)!important}
+  </style>
+</head>
+<body style="min-height:100vh;display:flex;flex-direction:column">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow">
+    <div class="container">
+      <a class="navbar-brand fw-bold fs-4" href="index.html"><i class="bi bi-bag-heart-fill me-2"></i>ShopVN</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarFAQ"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarFAQ">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="index.html">Trang chủ</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">Sản phẩm</a></li>
+          <li class="nav-item"><a class="nav-link active" href="faq.html">FAQ</a></li>
+          <li class="nav-item"><a class="nav-link" href="about.html">Về chúng tôi</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-2">
+          <a href="cart.html" class="btn btn-outline-light position-relative">
+            <i class="bi bi-cart3 fs-5"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount">0</span>
+          </a>
+          <div id="navAuthArea"></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="bg-light border-bottom py-2">
+    <div class="container"><nav aria-label="breadcrumb"><ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
+      <li class="breadcrumb-item active">Câu hỏi thường gặp</li>
+    </ol></nav></div>
+  </div>
+
+  <div class="faq-hero">
+    <div class="container text-center">
+      <i class="bi bi-question-circle-fill text-primary" style="font-size:3rem"></i>
+      <h1 class="fw-bold mt-3 mb-2">Câu hỏi thường gặp</h1>
+      <p class="text-muted mb-4">Tìm câu trả lời nhanh cho những thắc mắc phổ biến nhất</p>
+      <div style="max-width:480px;margin:0 auto">
+        <div class="input-group shadow-sm">
+          <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" class="form-control border-start-0 ps-0" id="faqSearch"
+                 placeholder="Tìm câu hỏi..." autocomplete="off"/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container py-5 flex-grow-1">
+    <div class="d-flex flex-wrap gap-2 justify-content-center mb-5" id="faqCats">
+      <button class="btn btn-outline-primary faq-cat-btn active" data-cat="all">Tất cả</button>
+      <button class="btn btn-outline-primary faq-cat-btn" data-cat="order"><i class="bi bi-bag me-1"></i>Đặt hàng</button>
+      <button class="btn btn-outline-primary faq-cat-btn" data-cat="ship"><i class="bi bi-truck me-1"></i>Giao hàng</button>
+      <button class="btn btn-outline-primary faq-cat-btn" data-cat="pay"><i class="bi bi-credit-card me-1"></i>Thanh toán</button>
+      <button class="btn btn-outline-primary faq-cat-btn" data-cat="return"><i class="bi bi-arrow-repeat me-1"></i>Đổi trả</button>
+      <button class="btn btn-outline-primary faq-cat-btn" data-cat="account"><i class="bi bi-person me-1"></i>Tài khoản</button>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-8" id="faqAccordion"></div>
+    </div>
+    <div class="row g-3 mt-5 justify-content-center">
+      <div class="col-12 text-center mb-3">
+        <h4 class="fw-bold">Vẫn chưa tìm được câu trả lời?</h4>
+        <p class="text-muted">Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giúp bạn</p>
+      </div>
+      <div class="col-md-4">
+        <div class="contact-card card border-0 shadow-sm text-center p-4 h-100">
+          <i class="bi bi-chat-dots-fill text-primary fs-2 mb-3 d-block"></i>
+          <h6 class="fw-bold">Live Chat</h6>
+          <p class="text-muted small mb-3">Trả lời trong vòng 2 phút</p>
+          <button class="btn btn-primary btn-sm px-4" onclick="openLiveChat()">Chat ngay</button>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="contact-card card border-0 shadow-sm text-center p-4 h-100">
+          <i class="bi bi-telephone-fill text-success fs-2 mb-3 d-block"></i>
+          <h6 class="fw-bold">Hotline</h6>
+          <p class="text-muted small mb-3">1800 1234 (Miễn phí &middot; 8:00&ndash;22:00)</p>
+          <a href="tel:18001234" class="btn btn-success btn-sm px-4">Gọi ngay</a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="contact-card card border-0 shadow-sm text-center p-4 h-100">
+          <i class="bi bi-envelope-fill text-warning fs-2 mb-3 d-block"></i>
+          <h6 class="fw-bold">Email</h6>
+          <p class="text-muted small mb-3">Phản hồi trong 24 giờ làm việc</p>
+          <a href="mailto:support@shopvn.com" class="btn btn-warning btn-sm px-4">Gửi email</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-dark text-white py-4 mt-auto">
+    <div class="container text-center"><p class="mb-0 text-muted small">&copy; 2026 ShopVN. All rights reserved.</p></div>
+  </footer>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+    <div id="toastMsg" class="toast align-items-center border-0" role="alert">
+      <div class="d-flex"><div class="toast-body" id="toastBody"></div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+    const FAQS = [
+      {cat:'order',q:'Làm thế nào để đặt hàng?',a:'Chọn sản phẩm → Thêm vào giỏ hàng → Thanh toán → Điền thông tin giao hàng → Chọn thanh toán → Đặt hàng. Bạn sẽ nhận email xác nhận ngay sau khi đặt thành công.'},
+      {cat:'order',q:'Tôi có thể hủy đơn hàng không?',a:'Bạn có thể hủy trong vòng 2 giờ sau khi đặt nếu đơn chưa xử lý. Vào "Đơn hàng của tôi" và chọn "Hủy đơn". Sau 2 giờ không thể hủy do đã bàn giao đơn vị vận chuyển.'},
+      {cat:'order',q:'Tôi có thể thay đổi địa chỉ sau khi đặt hàng?',a:'Có thể thay đổi trong vòng 1 giờ đầu bằng cách liên hệ hotline 1800 1234. Sau đó đơn hàng đã được đóng gói nên không thể thay đổi.'},
+      {cat:'ship',q:'Thời gian giao hàng là bao lâu?',a:'Tiêu chuẩn: 3–5 ngày. Nhanh: 1–2 ngày. Hỏa tốc: 2–4 giờ (nội thành TP.HCM, Hà Nội). Thời gian có thể kéo dài vào ngày lễ, Tết.'},
+      {cat:'ship',q:'Phí vận chuyển được tính như thế nào?',a:'Miễn phí cho đơn từ $50. Dưới $50: phí tiêu chuẩn $9.99. Giao nhanh: +$5. Hỏa tốc: +$10.'},
+      {cat:'ship',q:'Làm sao để theo dõi đơn hàng?',a:'Đăng nhập → Đơn hàng của tôi → Chọn đơn cần theo dõi. Bạn cũng nhận SMS và email tự động khi đơn thay đổi trạng thái.'},
+      {cat:'pay',q:'ShopVN hỗ trợ những phương thức thanh toán nào?',a:'COD (tiền mặt khi nhận hàng), Thẻ Visa/Mastercard/JCB, Ví MoMo, ZaloPay, và chuyển khoản ngân hàng.'},
+      {cat:'pay',q:'Thanh toán có an toàn không?',a:'Tuyệt đối an toàn. Mọi giao dịch được mã hóa SSL 256-bit. Chúng tôi không lưu thông tin thẻ. Hệ thống tuân thủ tiêu chuẩn PCI DSS.'},
+      {cat:'pay',q:'Mã giảm giá đang có là gì?',a:'SHOPVN10 giảm 10%, SAVE20 giảm 20%, FIRST50 giảm 50% cho lần mua đầu tiên. Mỗi mã chỉ dùng một lần per tài khoản.'},
+      {cat:'return',q:'Chính sách đổi trả như thế nào?',a:'Đổi trả trong 30 ngày nếu: sản phẩm lỗi kỹ thuật, không đúng mô tả, hoặc giao nhầm. Sản phẩm phải còn nguyên tem mác, chưa qua sử dụng.'},
+      {cat:'return',q:'Quy trình hoàn tiền mất bao lâu?',a:'Sau khi nhận hàng trả về và kiểm tra, hoàn tiền trong 5–7 ngày làm việc qua phương thức thanh toán ban đầu. COD hoàn qua chuyển khoản hoặc MoMo.'},
+      {cat:'account',q:'Tôi quên mật khẩu phải làm gì?',a:'Nhấn "Quên mật khẩu?" trên trang đăng nhập → Nhập email → Kiểm tra hộp thư (cả spam) → Nhấp link đặt lại. Link hiệu lực trong 24 giờ.'},
+      {cat:'account',q:'Làm sao trở thành thành viên VIP?',a:'Tất cả tài khoản mới đều được status VIP ngay khi đăng ký: ưu đãi độc quyền, tích điểm đổi quà, giao hàng ưu tiên, hỗ trợ 24/7.'},
+    ];
+
+    let activeCat = 'all';
+
+    function renderFAQ(filterText = '') {
+      const acc = document.getElementById('faqAccordion');
+      const fq  = filterText.toLowerCase();
+      const items = FAQS.filter(f =>
+        (activeCat === 'all' || f.cat === activeCat) &&
+        (!fq || (f.q + f.a).toLowerCase().includes(fq))
+      );
+      if (!items.length) {
+        acc.innerHTML = '<div class="text-center py-4 text-muted"><i class="bi bi-search fs-2 d-block mb-2 opacity-25"></i>Không tìm thấy câu hỏi phù hợp.</div>';
+        return;
+      }
+      acc.innerHTML = '<div class="accordion" id="mainAcc">' +
+        items.map((f, i) => `
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button ${i > 0 ? 'collapsed' : ''} fw-semibold" type="button"
+                      data-bs-toggle="collapse" data-bs-target="#faq${i}" aria-expanded="${i === 0}">
+                ${f.q}
+              </button>
+            </h2>
+            <div id="faq${i}" class="accordion-collapse collapse ${i === 0 ? 'show' : ''}" data-bs-parent="#mainAcc">
+              <div class="accordion-body text-muted">${f.a}</div>
+            </div>
+          </div>`).join('') + '</div>';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      Cart.updateCartUI();
+      renderFAQ();
+      document.querySelectorAll('.faq-cat-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.faq-cat-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeCat = btn.dataset.cat;
+          renderFAQ(document.getElementById('faqSearch').value);
+        });
+      });
+      let t;
+      document.getElementById('faqSearch').addEventListener('input', function () {
+        clearTimeout(t); t = setTimeout(() => renderFAQ(this.value), 250);
+      });
+    });
+
+    function openLiveChat() {
+      showToast('<i class="bi bi-chat-dots me-2"></i>Live chat đang khởi động... Vui lòng đợi!', 'primary');
+    }
+    function showToast(msg, type='success') {
+      const el=document.getElementById('toastMsg'),b=document.getElementById('toastBody');
+      if(!el||!b)return; el.className=`toast align-items-center text-bg-${type} border-0`;
+      b.innerHTML=msg; bootstrap.Toast.getOrCreateInstance(el,{delay:3000}).show();
+    }
+  </script>
+  <script src="js/footer-template.js"></script>
+</body>
+</html>
+
+
+
+
+
+

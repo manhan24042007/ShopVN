@@ -1,0 +1,317 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tài khoản - ShopVN</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/style.css?v=4" />
+</head>
+<body style="min-height:100vh;display:flex;flex-direction:column">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow">
+    <div class="container">
+      <a class="navbar-brand fw-bold fs-4" href="index.html"><i class="bi bi-bag-heart-fill me-2"></i>ShopVN</a>
+      <div class="d-flex align-items-center gap-2">
+        <a href="cart.html" class="btn btn-outline-light position-relative">
+          <i class="bi bi-cart3 fs-5"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount">0</span>
+        </a>
+        <div id="navAuthArea"></div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="bg-light border-bottom py-2">
+    <div class="container"><nav aria-label="breadcrumb"><ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
+      <li class="breadcrumb-item active">Tài khoản</li>
+    </ol></nav></div>
+  </div>
+
+  <div class="container py-5 flex-grow-1">
+    <div class="row g-4">
+      <!-- Sidebar -->
+      <div class="col-lg-3">
+        <div class="card border-0 shadow-sm" style="position:sticky;top:80px">
+          <div class="card-body text-center py-4 border-bottom">
+            <div class="position-relative d-inline-block mb-3">
+              <img src="" id="profileAvatar" alt="Avatar" class="rounded-circle" width="90" height="90" style="object-fit:cover;border:3px solid #e8f0fe" />
+              <label for="avatarFile" class="position-absolute bottom-0 end-0 rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:28px;height:28px;cursor:pointer;border:2px solid #fff" title="Đổi ảnh">
+                <i class="bi bi-camera-fill" style="font-size:.7rem"></i>
+              </label>
+              <input type="file" id="avatarFile" accept="image/*" class="d-none" onchange="handleAvatar(this)" />
+            </div>
+            <h6 class="fw-bold mb-0" id="sidebarName">---</h6>
+            <small class="text-muted" id="sidebarEmail">---</small>
+            <div class="mt-2"><span class="badge bg-primary-subtle text-primary border border-primary-subtle"><i class="bi bi-star-fill me-1"></i>Thành viên VIP</span></div>
+          </div>
+          <div class="card-body">
+            <nav class="nav flex-column gap-1" id="profileNav">
+              <a class="nav-link rounded-2 py-2 active" href="#" data-section="info" style="color:#555;font-weight:500;transition:all .2s"><i class="bi bi-person me-2"></i>Thông tin cá nhân</a>
+              <a class="nav-link rounded-2 py-2" href="#" data-section="security" style="color:#555;font-weight:500;transition:all .2s"><i class="bi bi-shield-lock me-2"></i>Bảo mật</a>
+              <a class="nav-link rounded-2 py-2" href="#" data-section="addresses" style="color:#555;font-weight:500;transition:all .2s"><i class="bi bi-geo-alt me-2"></i>Địa chỉ</a>
+              <a class="nav-link rounded-2 py-2" href="orders.html" style="color:#555;font-weight:500;transition:all .2s"><i class="bi bi-bag-check me-2"></i>Đơn hàng</a>
+              <a class="nav-link rounded-2 py-2" href="wishlist.html" style="color:#555;font-weight:500;transition:all .2s"><i class="bi bi-heart me-2"></i>Yêu thích</a>
+              <hr class="my-2"/>
+              <a class="nav-link rounded-2 py-2 text-danger" href="#" onclick="Auth.logout();return false" style="font-weight:500"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="col-lg-9">
+
+        <!-- Info section -->
+        <div class="tab-section" id="sec-info">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3"><h5 class="mb-0 fw-bold"><i class="bi bi-person-circle me-2 text-primary"></i>Thông tin cá nhân</h5></div>
+            <div class="card-body p-4">
+              <div id="infoAlert" class="d-none mb-3"></div>
+              <form id="infoForm" novalidate>
+                <div class="row g-3">
+                  <div class="col-md-6"><label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label><input type="text" class="form-control" id="infoName" required /></div>
+                  <div class="col-md-6"><label class="form-label fw-semibold">Email</label><input type="email" class="form-control bg-light" id="infoEmail" readonly /></div>
+                  <div class="col-md-6"><label class="form-label fw-semibold">Số điện thoại</label><input type="tel" class="form-control" id="infoPhone" placeholder="0901 234 567" /></div>
+                  <div class="col-md-6"><label class="form-label fw-semibold">Ngày tham gia</label><input type="text" class="form-control bg-light" id="infoJoined" readonly /></div>
+                </div>
+                <div class="mt-4 d-flex gap-2">
+                  <button type="submit" class="btn btn-primary px-4"><i class="bi bi-check-lg me-2"></i>Lưu thay đổi</button>
+                  <button type="button" class="btn btn-outline-secondary px-4" onclick="loadProfile()"><i class="bi bi-x-lg me-2"></i>Hủy</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security section -->
+        <div class="tab-section d-none" id="sec-security">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3"><h5 class="mb-0 fw-bold"><i class="bi bi-shield-lock me-2 text-primary"></i>Bảo mật tài khoản</h5></div>
+            <div class="card-body p-4">
+              <div id="secAlert" class="d-none mb-3"></div>
+              <h6 class="fw-bold mb-3">Đổi mật khẩu</h6>
+              <form id="secForm" novalidate>
+                <div class="d-flex flex-column gap-3" style="max-width:400px">
+                  <div>
+                    <label class="form-label fw-semibold">Mật khẩu hiện tại <span class="text-danger">*</span></label>
+                    <div class="position-relative"><input type="password" class="form-control pe-5" id="curPwd" required /><button type="button" class="pwd-eye" onclick="tpwd('curPwd',this)" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);border:none;background:none;color:#adb5bd;cursor:pointer"><i class="bi bi-eye"></i></button></div>
+                  </div>
+                  <div>
+                    <label class="form-label fw-semibold">Mật khẩu mới <span class="text-danger">*</span></label>
+                    <div class="position-relative"><input type="password" class="form-control pe-5" id="newPwd" required minlength="6" /><button type="button" class="pwd-eye" onclick="tpwd('newPwd',this)" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);border:none;background:none;color:#adb5bd;cursor:pointer"><i class="bi bi-eye"></i></button></div>
+                  </div>
+                  <div>
+                    <label class="form-label fw-semibold">Xác nhận mật khẩu mới <span class="text-danger">*</span></label>
+                    <div class="position-relative"><input type="password" class="form-control pe-5" id="cfmPwd" required /><button type="button" class="pwd-eye" onclick="tpwd('cfmPwd',this)" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);border:none;background:none;color:#adb5bd;cursor:pointer"><i class="bi bi-eye"></i></button></div>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-warning fw-bold px-4 mt-4"><i class="bi bi-key me-2"></i>Cập nhật mật khẩu</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Addresses section -->
+        <div class="tab-section d-none" id="sec-addresses">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between">
+              <h5 class="mb-0 fw-bold"><i class="bi bi-geo-alt me-2 text-primary"></i>Địa chỉ của tôi</h5>
+              <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addAddrModal"><i class="bi bi-plus-lg me-1"></i>Thêm địa chỉ</button>
+            </div>
+            <div class="card-body p-4" id="addrList"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Address Modal -->
+  <div class="modal fade" id="addAddrModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header border-0"><h5 class="modal-title fw-bold"><i class="bi bi-geo-alt me-2 text-primary"></i>Thêm địa chỉ mới</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <form id="addrForm">
+            <div class="row g-3">
+              <div class="col-md-6"><label class="form-label fw-semibold">Họ tên <span class="text-danger">*</span></label><input type="text" class="form-control" id="addrName" required /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Điện thoại <span class="text-danger">*</span></label><input type="tel" class="form-control" id="addrPhone" required pattern="[0-9]{10,11}" /></div>
+              <div class="col-12"><label class="form-label fw-semibold">Địa chỉ <span class="text-danger">*</span></label><input type="text" class="form-control" id="addrStreet" placeholder="Số nhà, tên đường..." required /></div>
+              <div class="col-md-4"><label class="form-label fw-semibold">Tỉnh/TP <span class="text-danger">*</span></label>
+                <select class="form-select" id="addrCity" required>
+                  <option value="">Chọn...</option>
+                  <option>Hà Nội</option>
+                  <option>TP. Hồ Chí Minh</option>
+                  <option>Hải Phòng</option>
+                  <option>Đà Nẵng</option>
+                  <option>Cần Thơ</option>
+                  <option>Huế</option>
+                  <option>Đồng Nai</option>
+                  <option>An Giang</option>
+                  <option>Bạc Liêu</option>
+                  <option>Bắc Ninh</option>
+                  <option>Bình Định</option>
+                  <option>Bình Phước</option>
+                  <option>Cao Bằng</option>
+                  <option>Cà Mau</option>
+                  <option>Đắk Lắk</option>
+                  <option>Điện Biên</option>
+                  <option>Đồng Tháp</option>
+                  <option>Gia Lai</option>
+                  <option>Hà Tĩnh</option>
+                  <option>Hưng Yên</option>
+                  <option>Khánh Hòa</option>
+                  <option>Lai Châu</option>
+                  <option>Lạng Sơn</option>
+                  <option>Lào Cai</option>
+                  <option>Long An</option>
+                  <option>Nghệ An</option>
+                  <option>Ninh Bình</option>
+                  <option>Phú Thọ</option>
+                  <option>Quảng Ngãi</option>
+                  <option>Quảng Ninh</option>
+                  <option>Quảng Trị</option>
+                  <option>Sơn La</option>
+                  <option>Tuyên Quang</option>
+                  <option>Vĩnh Long</option>
+                </select>
+              </div>
+              <div class="col-md-4"><label class="form-label fw-semibold">Quận/Huyện</label><input type="text" class="form-control" id="addrDistrict" /></div>
+              <div class="col-md-4"><label class="form-label fw-semibold">Phường/Xã</label><input type="text" class="form-control" id="addrWard" /></div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer border-0">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button class="btn btn-primary" onclick="saveAddr()"><i class="bi bi-check-lg me-1"></i>Lưu địa chỉ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+    <div id="toastMsg" class="toast align-items-center border-0" role="alert">
+      <div class="d-flex"><div class="toast-body" id="toastBody"></div><button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button></div>
+    </div>
+  </div>
+
+  <footer class="bg-dark text-white py-4 mt-auto"><div class="container text-center"><p class="mb-0 text-muted">&copy; 2026 ShopVN. All rights reserved.</p></div></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!Auth.requireAuth()) return;
+      loadProfile(); renderAddresses(); Cart.updateCartUI();
+
+      // Sidebar nav
+      document.querySelectorAll('#profileNav [data-section]').forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          document.querySelectorAll('#profileNav .nav-link').forEach(l => { l.classList.remove('active','text-primary','fw-bold'); l.style.background=''; });
+          a.classList.add('active'); a.style.background='#e8f0fe'; a.style.color='#0d6efd';
+          document.querySelectorAll('.tab-section').forEach(s => s.classList.add('d-none'));
+          document.getElementById('sec-' + a.dataset.section)?.classList.remove('d-none');
+        });
+      });
+
+      // Info form
+      document.getElementById('infoForm').addEventListener('submit', e => {
+        e.preventDefault();
+        const r = Auth.updateProfile({ fullName: document.getElementById('infoName').value, phone: document.getElementById('infoPhone').value });
+        showSecAlert('infoAlert', r.ok ? 'Cập nhật thành công!' : r.error, r.ok ? 'success' : 'danger');
+        if (r.ok) loadProfile();
+      });
+
+      // Security form
+      document.getElementById('secForm').addEventListener('submit', e => {
+        e.preventDefault();
+        const np = document.getElementById('newPwd').value;
+        if (np !== document.getElementById('cfmPwd').value) { showSecAlert('secAlert','Mật khẩu xác nhận không khớp.','danger'); return; }
+        const r = Auth.changePassword({ currentPassword: document.getElementById('curPwd').value, newPassword: np });
+        showSecAlert('secAlert', r.ok ? 'Đã cập nhật mật khẩu thành công!' : r.error, r.ok ? 'success' : 'danger');
+        if (r.ok) document.getElementById('secForm').reset();
+      });
+    });
+
+    function loadProfile() {
+      const u = Auth.current(); if (!u) return;
+      document.getElementById('profileAvatar').src = u.avatar;
+      document.getElementById('sidebarName').textContent = u.fullName;
+      document.getElementById('sidebarEmail').textContent = u.email;
+      document.getElementById('infoName').value  = u.fullName;
+      document.getElementById('infoEmail').value = u.email;
+      document.getElementById('infoPhone').value = u.phone || '';
+      document.getElementById('infoJoined').value = new Date(u.createdAt).toLocaleDateString('vi-VN');
+    }
+
+    function renderAddresses() {
+      const list = document.getElementById('addrList'); if (!list) return;
+      const addrs = Auth.getAddresses();
+      if (!addrs.length) { list.innerHTML = '<div class="text-center py-4 text-muted"><i class="bi bi-geo-alt fs-1 d-block mb-2 opacity-25"></i>Chưa có địa chỉ nào.</div>'; return; }
+      list.innerHTML = addrs.map((a, i) => `
+        <div class="border rounded-3 p-3 mb-3 ${i===0?'border-primary bg-light':''}">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="fw-semibold">${esc(a.name)} ${i===0?'<span class="badge bg-primary ms-1 small">Mặc định</span>':''}</div>
+              <div class="text-muted small mt-1">${esc(a.phone)}</div>
+              <div class="text-muted small">${esc(a.street)}, ${esc(a.district||'')}, ${esc(a.city)}</div>
+            </div>
+            <button class="btn btn-sm btn-outline-danger" onclick="delAddr('${a.id}')"><i class="bi bi-trash"></i></button>
+          </div>
+        </div>`).join('');
+    }
+
+    function saveAddr() {
+      const f = document.getElementById('addrForm'); if (!f.checkValidity()) { f.classList.add('was-validated'); return; }
+      Auth.addAddress({ name: document.getElementById('addrName').value, phone: document.getElementById('addrPhone').value, street: document.getElementById('addrStreet').value, district: document.getElementById('addrDistrict').value, city: document.getElementById('addrCity').value, ward: document.getElementById('addrWard').value });
+      bootstrap.Modal.getInstance(document.getElementById('addAddrModal')).hide();
+      f.reset(); f.classList.remove('was-validated');
+      renderAddresses();
+      showToast('<i class="bi bi-check-circle me-2"></i>Đã thêm địa chỉ!', 'success');
+    }
+
+    function delAddr(id) { if(confirm('Xóa địa chỉ này?')){ Auth.removeAddress(id); renderAddresses(); } }
+
+    function handleAvatar(input) {
+      const file = input.files[0]; if (!file) return;
+      if (file.size > 2*1024*1024) { showToast('Ảnh tối đa 2MB.','warning'); return; }
+      const r = new FileReader();
+      r.onload = e => { Auth.updateProfile({ avatar: e.target.result }); document.getElementById('profileAvatar').src = e.target.result; showToast('<i class="bi bi-check-circle me-2"></i>Đã cập nhật ảnh!','success'); };
+      r.readAsDataURL(file);
+    }
+
+    function showSecAlert(id, msg, type) {
+      const el = document.getElementById(id);
+      el.className = `alert alert-${type} d-flex align-items-center gap-2 mb-3`;
+      el.innerHTML = `<i class="bi bi-${type==='success'?'check-circle':'exclamation-circle'}-fill flex-shrink-0"></i><span>${msg}</span>`;
+      setTimeout(() => el.className = 'd-none', 4000);
+    }
+
+    function tpwd(id, btn) {
+      const i = document.getElementById(id); i.type = i.type==='password'?'text':'password';
+      btn.querySelector('i').className = i.type==='password'?'bi bi-eye':'bi bi-eye-slash';
+    }
+
+    function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function showToast(msg, type='success') {
+      const el = document.getElementById('toastMsg'); const b = document.getElementById('toastBody');
+      if(!el||!b) return; el.className=`toast align-items-center text-bg-${type} border-0`; b.innerHTML=msg;
+      bootstrap.Toast.getOrCreateInstance(el,{delay:3000}).show();
+    }
+  </script>
+  <script src="js/footer-template.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
