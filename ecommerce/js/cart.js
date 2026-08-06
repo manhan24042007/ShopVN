@@ -30,7 +30,7 @@ const Cart = (() => {
       items.push({ id, title, price: Number(price), image, qty });
     }
     saveItems(items);
-    showToast(`<i class="bi bi-check-circle me-2"></i>${escapeHtml(title.substring(0, 40))}... added to cart!`, 'success');
+    showToast(`<i class="bi bi-check-circle me-2"></i>Đã thêm "${escapeHtml(title.substring(0, 30))}..." vào giỏ hàng!`, 'success');
   }
 
   function remove(id) {

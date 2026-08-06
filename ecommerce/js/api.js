@@ -166,7 +166,9 @@ const API = (() => {
     return `
       <div class="card product-card fade-in" data-id="${product.id}">
         <div class="card-img-wrapper">
-          <img src="${product.image}" alt="${escapeHtml(product.title)}" loading="lazy" referrerpolicy="no-referrer" />
+          <a href="product-detail.html?id=${product.id}" class="card-click-area">
+            <img src="${product.image}" alt="${escapeHtml(product.title)}" loading="lazy" referrerpolicy="no-referrer" />
+          </a>
           <span class="badge-category ${catClass}">${catLabel}</span>
           <span class="badge-sale badge bg-danger">-${discount}%</span>
           <div class="card-overlay">
@@ -192,7 +194,7 @@ const API = (() => {
               <span class="product-price">${formatPrice(product.price)}</span><br>
               <span class="product-price-old">${formatPrice(oldPrice)}</span>
             </div>
-            <button class="btn btn-sm btn-primary" onclick="Cart.add(${product.id}, '${escapeAttr(product.title)}', ${product.price}, '${product.image}')">
+            <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();Cart.add(${product.id}, '${escapeAttr(product.title)}', ${product.price}, '${product.image}')">
               <i class="bi bi-cart-plus me-1"></i>Thêm
             </button>
           </div>

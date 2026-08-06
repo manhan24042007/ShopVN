@@ -215,6 +215,13 @@ textarea:focus-visible { outline: 3px solid rgba(13,110,253,.5); outline-offset:
 }
 .product-card:hover .card-img-wrapper img { transform: scale(1.08); }
 
+/* Clickable image area */
+.product-card .card-click-area {
+  display: block;
+  cursor: pointer;
+}
+.product-card .card-click-area:hover { opacity: 0.9; }
+
 .product-card .card-overlay {
   position: absolute;
   inset: 0;
