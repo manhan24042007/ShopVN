@@ -25,7 +25,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
   color: #333;
   background: #fff;
   opacity: 1;
@@ -864,25 +864,42 @@ mark.highlight {
 }
 
 #liveChatBtn {
-  width: 52px; height: 52px; border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
   background: linear-gradient(135deg, #0d6efd, #7c3aed);
-  color: #fff; border: none;
+  color: #fff;
+  border: none;
   box-shadow: 0 4px 16px rgba(13,110,253,.4);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.3rem; cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  cursor: pointer;
   transition: transform .2s, box-shadow .2s;
 }
-#liveChatBtn:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(13,110,253,.5); }
+
+#liveChatBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 24px rgba(13,110,253,.5);
+}
 
 #liveChatPanel {
   position: absolute;
-  bottom: 62px; left: 0;
+  bottom: 62px;
+  left: 0;
   width: 300px;
-  background: #fff; border-radius: 16px;
+  background: #fff;
+  border-radius: 16px;
   box-shadow: 0 8px 40px rgba(0,0,0,.18);
-  display: none; overflow: hidden;
+  display: none;
+  overflow: hidden;
 }
-#liveChatPanel.open { display: block; animation: slideUpPanel .25s ease; }
+
+#liveChatPanel.open {
+  display: block;
+  animation: slideUpPanel .25s ease;
+}
 
 @keyframes slideUpPanel {
   from { opacity: 0; transform: translateY(20px); }
@@ -916,22 +933,477 @@ mark.highlight {
 }
 
 /* =============================================
-   Responsive
+   Responsive - Mobile First Approach
    ============================================= */
 
-@media (max-width: 991.98px) {
-  .hero-slide { height: 360px; }
-  .sticky-sidebar { position: static; }
-}
-
-@media (max-width: 767.98px) {
-  .hero-slide { height: 280px; }
-  .hero-content h1 { font-size: 1.75rem; }
-  .hero-content .lead { font-size: .95rem; }
-  .product-detail-price { font-size: 1.5rem; }
-  .cart-item { flex-wrap: wrap; }
-}
-
+/* Extra Small Devices (portrait phones) */
 @media (max-width: 575.98px) {
-  .hero-slide { height: 240px; }
+  .hero-slide { height: 220px; }
+  .hero-content h1 { font-size: 1.4rem; }
+  .hero-content .lead { font-size: .85rem; }
+  .hero-content .btn { font-size: .85rem; padding: .4rem .8rem; }
+  
+  .product-detail-price { font-size: 1.4rem; }
+  .product-detail-img-wrapper { padding: 1.5rem; min-height: 280px; }
+  .product-detail-img-wrapper img { max-height: 220px; }
+  
+  .cart-item { flex-wrap: wrap; padding: .75rem; }
+  .cart-item-img { width: 60px; height: 60px; }
+  
+  .footer-enhanced h5, .footer-enhanced h6 { font-size: 1rem; }
+  .footer-link { font-size: .82rem; }
+  
+  .checkout-form .form-control { font-size: .9rem; }
+  .checkout-form label { font-size: .85rem; }
+  
+  .section-header h2 { font-size: 1.25rem; }
+  .section-header p { font-size: .85rem; }
+  
+  .product-card .card-img-wrapper { height: 160px; }
+  .product-card .card-img-wrapper img { max-height: 120px; }
+  .product-card .product-title { font-size: .82rem; }
+  .product-card .product-price { font-size: 1rem; }
+  
+  .navbar-brand { font-size: 1.1rem !important; }
+  .navbar { padding: .5rem 0 !important; }
+  
+  .feature-item { padding: .75rem; }
+  .feature-item i { font-size: 1.5rem; }
+  .feature-item h6 { font-size: .8rem; }
+  .feature-item small { font-size: .7rem; }
+  
+  .qty-control button { padding: .4rem .6rem; font-size: 1rem; }
+  .qty-control input { width: 40px; font-size: .9rem; }
+  
+  .modal-dialog { margin: .5rem; }
+  .modal-body { padding: 1rem; }
+  
+  #backToTop { width: 38px; height: 38px; bottom: 1rem; right: 1rem; }
+  
+  .empty-state { padding: 2rem 1rem; }
+  .empty-state i { font-size: 3rem; }
+  
+  #liveChatWidget { bottom: 1rem; left: 1rem; }
+  #liveChatBtn { width: 46px; height: 46px; font-size: 1.1rem; }
+  #liveChatPanel { width: 260px; }
+  
+  .pagination .page-link { font-size: .82rem; padding: .4rem .6rem; }
+  
+  .compare-table { font-size: .8rem; }
+  .compare-img { width: 80px; height: 80px; padding: .5rem; }
+  
+  .order-card .card-body { padding: .75rem; }
+  .order-status { font-size: .7rem; padding: .2rem .5rem; }
+  
+  .profile-sidebar { border-radius: 0; margin: 0 -12px; }
+  .profile-nav .nav-link { font-size: .9rem; padding: .5rem .75rem !important; }
+  
+  .flash-sale-banner { font-size: .78rem; padding: .5rem; }
+  
+  .wishlist-btn { font-size: .9rem; }
+  
+  .toast { min-width: 220px; font-size: .85rem; }
+}
+
+/* Small Devices (landscape phones) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .hero-slide { height: 260px; }
+  .hero-content h1 { font-size: 1.6rem; }
+  .product-card .card-img-wrapper { height: 180px; }
+  
+  .cart-item-img { width: 70px; height: 70px; }
+  
+  .product-detail-img-wrapper { min-height: 320px; }
+  
+  #liveChatPanel { width: 280px; }
+}
+
+/* Medium Devices (tablets) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .hero-slide { height: 340px; }
+  .sticky-sidebar { position: static; }
+  
+  .product-card .card-img-wrapper { height: 200px; }
+  
+  .product-detail-img-wrapper { min-height: 360px; }
+}
+
+/* Large Devices (desktops) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .hero-slide { height: 440px; }
+}
+
+/* Extra Large Devices (large desktops) */
+@media (min-width: 1200px) {
+  .hero-slide { height: 500px; }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .product-card:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+  }
+  .product-card:hover .card-overlay { opacity: 1; }
+  .product-card:hover .card-img-wrapper img { transform: scale(1.05); }
+  
+  .overlay-btn { transform: translateY(0) !important; }
+  
+  .category-card:hover { transform: none; }
+  .feature-item:hover { transform: none; }
+  
+  .footer-link:hover { padding-left: 0; }
+  
+  .carousel-control-prev,
+  .carousel-control-next { display: flex; }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  img { image-rendering: -webkit-optimize-contrast; }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  html { scroll-behavior: auto; }
+}
+
+/* Print styles */
+@media print {
+  .navbar, .footer-enhanced, #backToTop, #liveChatWidget, .btn, .card-overlay { display: none !important; }
+  .product-card { box-shadow: none; page-break-inside: avoid; }
+}
+
+/* Landscape orientation on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hero-section { display: none; }
+  .modal-dialog { max-width: 90%; }
+}
+
+/* Ultra wide screens */
+@media (min-width: 1400px) {
+  .container { max-width: 1320px; }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+  /* Uncomment below to enable dark mode */
+  /* body { background: #1a1a1a; color: #e0e0e0; } */
+}
+
+/* Sticky elements on mobile */
+@media (max-width: 991.98px) {
+  .sticky-top {
+    position: relative;
+  }
+  
+  .sticky-sidebar {
+    position: static;
+  }
+}
+
+/* Fix for iOS Safari 100vh issue */
+@supports (-webkit-touch-callout: none) {
+  body { min-height: -webkit-fill-available; }
+}
+
+/* Container max-width adjustments for tablets */
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .container { max-width: 720px; }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .container { max-width: 960px; }
+}
+
+/* Product grid responsive columns */
+@media (max-width: 575.98px) {
+  .products-grid .col-6 { width: 50%; }
+}
+
+@media (max-width: 400px) {
+  .products-grid .col-6 { width: 100%; }
+}
+
+/* Search bar responsive */
+@media (max-width: 575.98px) {
+  #searchForm {
+    width: 100%;
+    margin-top: .5rem;
+  }
+  #searchInput { width: 100%; }
+}
+
+/* Navbar collapse breakpoint */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    background: rgba(13, 110, 253, 0.95);
+    margin-top: .5rem;
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .navbar-nav { margin-bottom: .5rem; }
+  .nav-item { margin-bottom: .25rem; }
+}
+
+/* Category dropdown responsive */
+@media (max-width: 575.98px) {
+  .dropdown-menu {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    padding-left: 1rem;
+  }
+  
+  .dropdown-item { color: rgba(255,255,255,.8); }
+  .dropdown-item:hover { background: transparent; color: #fff; }
+}
+
+/* Cart badge responsive */
+@media (max-width: 575.98px) {
+  #cartCount { font-size: .65rem; }
+}
+
+/* Checkout steps responsive */
+@media (max-width: 575.98px) {
+  .checkout-steps .step-indicator {
+    font-size: 1.5rem;
+  }
+  .checkout-steps .step-label {
+    font-size: .75rem;
+  }
+}
+
+/* Form responsive */
+@media (max-width: 575.98px) {
+  input.form-control,
+  select.form-control,
+  textarea.form-control {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* Table responsive */
+@media (max-width: 767.98px) {
+  .table-responsive-stack {
+    display: block;
+  }
+  
+  .table-responsive-stack thead,
+  .table-responsive-stack tbody,
+  .table-responsive-stack th,
+  .table-responsive-stack td,
+  .table-responsive-stack tr {
+    display: block;
+  }
+  
+  .table-responsive-stack thead { display: none; }
+  
+  .table-responsive-stack td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+    text-align: left;
+  }
+  
+  .table-responsive-stack td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 1rem;
+    font-weight: 600;
+    color: #666;
+  }
+}
+
+/* Accordion responsive */
+@media (max-width: 575.98px) {
+  .accordion-button { font-size: .9rem; padding: .75rem 1rem; }
+  .accordion-body { font-size: .85rem; }
+}
+
+/* Newsletter section responsive */
+@media (max-width: 575.98px) {
+  .newsletter-section { padding: 2rem 1rem !important; }
+  .newsletter-section h3 { font-size: 1.2rem; }
+  .newsletter-section p { font-size: .85rem; }
+  #newsletterForm { flex-direction: column; }
+  #newsletterForm input { width: 100%; }
+}
+
+/* Profile page responsive */
+@media (max-width: 575.98px) {
+  .profile-header { padding: 1.5rem; }
+  .profile-avatar { width: 80px; height: 80px; font-size: 2rem; }
+  .profile-name { font-size: 1.2rem; }
+}
+
+/* Admin sidebar responsive */
+@media (max-width: 991.98px) {
+  .admin-sidebar {
+    position: fixed;
+    left: -280px;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    z-index: 1050;
+    background: #fff;
+    box-shadow: 4px 0 20px rgba(0,0,0,.15);
+  }
+  
+  .admin-sidebar.open { left: 0; }
+  
+  .admin-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 1040;
+    display: none;
+  }
+  
+  .admin-overlay.show { display: block; }
+}
+
+/* Wishlist/Compare responsive */
+@media (max-width: 575.98px) {
+  .wishlist-grid,
+  .compare-grid { grid-template-columns: repeat(2, 1fr); gap: .75rem; }
+  
+  .wishlist-item,
+  .compare-item { padding: .5rem; }
+}
+
+/* Toast position on mobile */
+@media (max-width: 575.98px) {
+  .toast-container {
+    left: 1rem !important;
+    right: 1rem !important;
+    bottom: 5rem !important;
+  }
+  
+  .toast { width: 100%; min-width: auto; }
+}
+
+/* =============================================
+   Live Chat & Floating Elements Responsive
+   ============================================= */
+
+/* Mobile - smaller chat widget */
+@media (max-width: 575.98px) {
+  #liveChatWidget {
+    bottom: 1rem;
+    left: 1rem;
+  }
+  
+  #liveChatBtn {
+    width: 46px;
+    height: 46px;
+    font-size: 1.1rem;
+  }
+  
+  #liveChatPanel {
+    width: 260px;
+    bottom: 56px;
+  }
+  
+  #backToTop {
+    width: 38px;
+    height: 38px;
+    bottom: 1rem;
+    right: 1rem;
+    font-size: 1rem;
+  }
+  
+  /* Push footer content above fixed widgets */
+  .footer-enhanced {
+    padding-bottom: 5rem;
+  }
+}
+
+/* Tablet */
+@media (min-width: 576px) and (max-width: 767.98px) {
+  #liveChatPanel {
+    width: 280px;
+  }
+  
+  #liveChatWidget {
+    bottom: 1.25rem;
+    left: 1.25rem;
+  }
+}
+
+/* Desktop - original size */
+@media (min-width: 768px) {
+  #liveChatWidget {
+    bottom: 1.5rem;
+    left: 1.5rem;
+  }
+  
+  #liveChatBtn {
+    width: 52px;
+    height: 52px;
+    font-size: 1.3rem;
+  }
+  
+  #liveChatPanel {
+    width: 300px;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1400px) {
+  #liveChatWidget {
+    bottom: 2rem;
+    left: 2rem;
+  }
+}
+
+/* Ensure chat doesn't overflow viewport on mobile */
+@media (max-width: 380px) {
+  #liveChatPanel {
+    width: 240px;
+    right: 0;
+    left: auto;
+  }
+}
+
+/* Safe area for notched phones */
+@supports (padding: env(safe-area-inset-bottom)) {
+  #liveChatWidget {
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+    left: calc(1rem + env(safe-area-inset-left));
+  }
+  
+  #backToTop {
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+    right: calc(1rem + env(safe-area-inset-right));
+  }
+}
+
+/* Footer padding on mobile to avoid chat widget overlap */
+@media (max-width: 575.98px) {
+  footer.bg-dark {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0)) !important;
+  }
+  
+  /* Also for light footers */
+  footer.bg-light {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0)) !important;
+  }
+}
+
+/* Ensure main content has proper bottom margin on pages with chat */
+@media (max-width: 575.98px) {
+  main {
+    padding-bottom: 2rem;
+  }
 }

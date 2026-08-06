@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
@@ -236,20 +236,6 @@
     </div>
   </section>
 
-  <!-- Recently Viewed (shown only when data exists) -->
-  <section class="py-5" id="recentlyViewedSection">
-    <div class="container">
-      <div class="section-header d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2 class="fw-bold mb-0">Đã xem gần đây</h2>
-          <p class="text-muted mb-0">Tiếp tục khám phá những sản phẩm bạn quan tâm</p>
-        </div>
-        <a href="products.html" class="btn btn-outline-primary">Xem tất cả <i class="bi bi-arrow-right"></i></a>
-      </div>
-      <div class="row g-4" id="recentlyViewedGrid"></div>
-    </div>
-  </section>
-
   <!-- Newsletter -->
   <section class="newsletter-section py-5">
     <div class="container">
@@ -407,8 +393,8 @@
   </footer>
 
   <!-- Live Chat Widget -->
-  <div id="liveChatWidget" style="position:fixed!important;bottom:1.5rem;left:1.5rem;z-index:1050!important;display:block!important">
-    <div id="liveChatPanel" style="position:absolute;bottom:62px;left:0;width:300px;background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.2);display:none;overflow:hidden">
+  <div id="liveChatWidget">
+    <div id="liveChatPanel">
       <div class="chat-header">
         <div class="d-flex align-items-center gap-2">
           <div class="rounded-circle bg-white d-flex align-items-center justify-content-center" style="width:32px;height:32px">
@@ -427,8 +413,7 @@
         <button class="btn btn-primary btn-sm px-3" onclick="sendChatMsg()"><i class="bi bi-send"></i></button>
       </div>
     </div>
-    <button id="liveChatBtn" onclick="toggleLiveChat()" aria-label="Live Chat"
-      style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#0d6efd,#7c3aed);color:#fff;border:none;box-shadow:0 4px 16px rgba(13,110,253,.4);display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;transition:transform .2s">
+    <button id="liveChatBtn" onclick="toggleLiveChat()" aria-label="Live Chat">
       <i class="bi bi-chat-dots-fill"></i>
     </button>
   </div>
@@ -466,7 +451,6 @@
   <script src="js/search.js"></script>
   <script src="js/minicart.js"></script>
   <script src="js/notifications.js"></script>
-  <script src="js/recently-viewed.js"></script>
   <script src="js/main.js"></script>
   <script>
     /* ── AOS scroll reveal ── */

@@ -1,11 +1,11 @@
-﻿/**
- * cart.js — Quản lý giỏ hàng (localStorage)
+/**
+ * cart.js — Cart Management (localStorage)
  */
 
 const Cart = (() => {
-  const KEY      = 'shopvn_cart';
+  const KEY      = 'globalmart_cart';
   const DISCOUNT_CODES = {
-    'SHOPVN10': 10,
+    'SAVE10':   10,
     'SAVE20':   20,
     'FIRST50':  50,
   };
@@ -30,7 +30,7 @@ const Cart = (() => {
       items.push({ id, title, price: Number(price), image, qty });
     }
     saveItems(items);
-    showToast(`<i class="bi bi-check-circle me-2"></i>${escapeHtml(title.substring(0, 40))}... đã thêm vào giỏ!`, 'success');
+    showToast(`<i class="bi bi-check-circle me-2"></i>${escapeHtml(title.substring(0, 40))}... added to cart!`, 'success');
   }
 
   function remove(id) {
@@ -114,18 +114,18 @@ const Cart = (() => {
           <a href="product-detail.html?id=${item.id}" class="cart-item-title d-block">${API.escapeHtml(item.title)}</a>
           <div class="text-primary fw-bold">${API.formatPrice(item.price)}</div>
           <div class="cart-qty mt-2">
-            <button onclick="Cart.updateQty(${item.id}, ${item.qty - 1}); Cart.renderCartPage();" aria-label="Giảm">
+            <button onclick="Cart.updateQty(${item.id}, ${item.qty - 1}); Cart.renderCartPage();" aria-label="Decrease">
               <i class="bi bi-dash"></i>
             </button>
             <input type="number" value="${item.qty}" min="1" onchange="Cart.updateQty(${item.id}, this.value); Cart.renderCartPage();" />
-            <button onclick="Cart.updateQty(${item.id}, ${item.qty + 1}); Cart.renderCartPage();" aria-label="Tăng">
+            <button onclick="Cart.updateQty(${item.id}, ${item.qty + 1}); Cart.renderCartPage();" aria-label="Increase">
               <i class="bi bi-plus"></i>
             </button>
           </div>
         </div>
         <div class="text-end">
           <div class="fw-bold text-dark">${API.formatPrice(item.price * item.qty)}</div>
-          <button class="cart-item-remove mt-2" onclick="Cart.remove(${item.id}); Cart.renderCartPage();" aria-label="Xóa sản phẩm">
+          <button class="cart-item-remove mt-2" onclick="Cart.remove(${item.id}); Cart.renderCartPage();" aria-label="Remove">
             <i class="bi bi-trash"></i>
           </button>
         </div>
@@ -138,10 +138,10 @@ const Cart = (() => {
     const discount = getStoredDiscount();
     const total    = sub + shipping - discount;
 
-    if (itemCountEl) itemCountEl.textContent = `${items.length} sản phẩm`;
+    if (itemCountEl) itemCountEl.textContent = `${items.length} item(s)`;
     if (subtotalEl)  subtotalEl.textContent  = API.formatPrice(sub);
     if (shippingEl) {
-      shippingEl.textContent = shipping === 0 ? 'Miễn phí' : API.formatPrice(shipping);
+      shippingEl.textContent = shipping === 0 ? 'Free' : API.formatPrice(shipping);
       shippingEl.className   = shipping === 0 ? 'text-success' : '';
     }
 
@@ -157,7 +157,7 @@ const Cart = (() => {
   }
 
   function getStoredDiscount() {
-    const d = sessionStorage.getItem('shopvn_discount');
+    const d = sessionStorage.getItem('globalmart_discount');
     return d ? JSON.parse(d).amount : 0;
   }
 
@@ -199,7 +199,7 @@ const Cart = (() => {
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
     set('co-subtotal', API.formatPrice(sub));
-    set('co-shipping', shippingCost === 0 ? 'Miễn phí' : API.formatPrice(shippingCost));
+    set('co-shipping', shippingCost === 0 ? 'Free' : API.formatPrice(shippingCost));
     set('co-total',    API.formatPrice(Math.max(0, total)));
     set('finalTotal',  API.formatPrice(Math.max(0, total)));
 
@@ -222,7 +222,6 @@ const Cart = (() => {
   }
 
   // ---------- Init ----------
-  // Update badge on every page load
   document.addEventListener('DOMContentLoaded', updateCartUI);
 
   return {
@@ -242,4 +241,3 @@ const Cart = (() => {
     DISCOUNT_CODES,
   };
 })();
-

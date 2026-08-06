@@ -1,4 +1,4 @@
-﻿/**
+/**
  * product-detail.js — Trang chi tiết sản phẩm
  */
 
@@ -35,7 +35,17 @@ async function loadProduct(id) {
   if (!container) return;
 
   try {
-    const p       = await API.getProductById(id);
+    const p = await API.getProductById(id);
+    if (!p) {
+      container.innerHTML = `
+        <div class="alert alert-danger text-center py-5">
+          <i class="bi bi-exclamation-triangle-fill fs-1 d-block mb-3"></i>
+          <h5>Không tìm thấy sản phẩm</h5>
+          <p class="text-muted">Sản phẩm này không tồn tại hoặc đã bị xóa.</p>
+          <a href="products.html" class="btn btn-primary">← Quay lại danh sách</a>
+        </div>`;
+      return;
+    }
     const catLabel = API.getCategoryLabel(p.category);
     const catClass = API.getCategoryBadgeClass(p.category);
     const discount = Math.floor(Math.random() * 20) + 5;
@@ -237,11 +247,6 @@ async function loadProduct(id) {
       Cart.add(p.id, p.title, p.price, p.image, qty);
       window.location.href = 'cart.html';
     });
-
-    // ── Track Recently Viewed ──────────────────────────────────
-    if (typeof RecentlyViewed !== 'undefined') {
-      RecentlyViewed.add(p);
-    }
 
     // ── Init Reviews ───────────────────────────────────────────
     if (typeof Reviews !== 'undefined') {

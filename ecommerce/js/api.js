@@ -14,11 +14,22 @@ const API = (() => {
       const cached = Cache.get(endpoint);
       if (cached) return cached;
     }
-    const res = await fetch(`${BASE_URL}${endpoint}`);
-    if (!res.ok) throw new Error(`API Error ${res.status}: ${endpoint}`);
-    const data = await res.json();
-    if (typeof Cache !== 'undefined') Cache.set(endpoint, data);
-    return data;
+    
+    // AbortController for timeout
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    
+    try {
+      const res = await fetch(`${BASE_URL}${endpoint}`, { signal: controller.signal });
+      clearTimeout(timeout);
+      if (!res.ok) throw new Error(`API Error ${res.status}: ${endpoint}`);
+      const data = await res.json();
+      if (typeof Cache !== 'undefined') Cache.set(endpoint, data);
+      return data;
+    } catch (err) {
+      clearTimeout(timeout);
+      throw err;
+    }
   }
 
   function formatPrice(usd) {
