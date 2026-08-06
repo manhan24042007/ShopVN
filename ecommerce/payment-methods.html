@@ -1,215 +1,214 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Payment Methods - GlobalMart</title>
-  <link rel="manifest" href="manifest.json"/>
-  <meta name="theme-color" content="#0d6efd"/>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>???</text></svg>" />
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Phương thức thanh toán - ShopVN</title>
+  <meta name="description" content="Các phương thức thanh toán tại ShopVN: COD, MoMo, ZaloPay, Visa, Mastercard, PayPal và chuyển khoản ngân hàng."/>
+  <link rel="manifest" href="manifest.json"/><meta name="theme-color" content="#0d6efd"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛍️</text></svg>" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/style.css?v=4"/>
   <style>
-    .payment-hero{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;padding:4rem 0 3rem;position:relative;overflow:hidden}
-    .payment-hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
-    .payment-card{border-radius:16px;border:none;transition:all .2s}
-    .payment-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1)!important}
-    .payment-icon{width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:2rem}
-    .payment-logo{height:40px;object-fit:contain}
-    .bank-logo{width:80px;height:50px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;margin:0 auto}
+    .pay-hero{background:linear-gradient(135deg,#f0f4ff,#e8f0fe);padding:3rem 0 2rem}
+    .pay-card{border-radius:14px;border:none;transition:transform .2s,box-shadow .2s;cursor:pointer}
+    .pay-card:hover{transform:translateY(-4px);box-shadow:0 10px 28px rgba(0,0,0,.12)!important;border-color:#0d6efd!important}
+    .pay-icon{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem}
+    .pay-badge{font-size:.7rem;padding:.25rem .6rem;border-radius:8px;font-weight:600}
+    .pay-step{position:relative;padding-left:3.5rem;margin-bottom:1.5rem}
+    .pay-step .num{position:absolute;left:0;top:0;width:2.5rem;height:2.5rem;border-radius:50%;background:linear-gradient(135deg,#0d6efd,#7c3aed);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+    .bank-table{border-radius:12px;overflow:hidden}
+    .bank-table th{background:#0d6efd;color:#fff;border:none}
+    .accordion-button:not(.collapsed){background:#e8f0fe;color:#0d6efd;box-shadow:none}
+    .accordion-button:focus{box-shadow:none}
+    .accordion-item{border:1px solid #e9ecef;border-radius:10px!important;margin-bottom:.75rem;overflow:hidden}
   </style>
 </head>
 <body style="min-height:100vh;display:flex;flex-direction:column">
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow">
     <div class="container">
-      <a class="navbar-brand fw-bold fs-4" href="index.html"><i class="bi bi-bag-heart-fill me-2"></i>GlobalMart</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house me-1"></i>Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="products.html"><i class="bi bi-grid me-1"></i>Products</a></li>
-          <li class="nav-item"><a class="nav-link" href="about.html"><i class="bi bi-info-circle me-1"></i>About</a></li>
-          <li class="nav-item"><a class="nav-link" href="return-policy.html"><i class="bi bi-arrow-repeat me-1"></i>Returns</a></li>
-          <li class="nav-item"><a class="nav-link active" href="payment-methods.html"><i class="bi bi-credit-card me-1"></i>Payment</a></li>
-          <li class="nav-item"><a class="nav-link" href="faq.html"><i class="bi bi-question-circle me-1"></i>FAQ</a></li>
+      <a class="navbar-brand fw-bold fs-4" href="index.html"><i class="bi bi-bag-heart-fill me-2"></i>ShopVN</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarPay"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarPay">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="index.html">Trang chủ</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">Sản phẩm</a></li>
+          <li class="nav-item"><a class="nav-link" href="faq.html">FAQ</a></li>
+          <li class="nav-item"><a class="nav-link" href="about.html">Về chúng tôi</a></li>
         </ul>
+        <div class="d-flex align-items-center gap-2">
+          <a href="cart.html" class="btn btn-outline-light position-relative">
+            <i class="bi bi-cart3 fs-5"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount">0</span>
+          </a>
+          <div id="navAuthArea"></div>
+        </div>
       </div>
     </div>
   </nav>
 
-  <div class="payment-hero">
-    <div class="container position-relative">
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb mb-3">
-          <li class="breadcrumb-item"><a href="index.html" class="text-white-50">Home</a></li>
-          <li class="breadcrumb-item text-white" aria-current="page">Payment Methods</li>
-        </ol>
-      </nav>
-      <h1 class="display-5 fw-bold mb-3"><i class="bi bi-credit-card me-3"></i>Payment Methods</h1>
-      <p class="lead text-white-50">Multiple safe and convenient payment options</p>
+  <div class="flex-grow-1">
+    <div class="pay-hero">
+      <div class="container text-center">
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle mb-3 px-3 py-2">
+          <i class="bi bi-credit-card-2-front me-1"></i>Thanh toán an toàn
+        </span>
+        <h1 class="fw-bold mb-3">Phương thức thanh toán</h1>
+        <p class="text-muted mb-0" style="max-width:600px;margin:0 auto">Đa dạng phương thức thanh toán — an toàn, nhanh chóng và bảo mật với công nghệ SSL 256-bit.</p>
+      </div>
     </div>
+
+    <section class="py-5">
+      <div class="container">
+        <h2 class="fw-bold mb-4 text-center">Phương thức được hỗ trợ</h2>
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-4">
+            <div class="pay-card card shadow-sm border h-100 p-4">
+              <div class="d-flex align-items-center mb-3">
+                <div class="pay-icon bg-success-subtle text-success me-3"><i class="bi bi-cash-stack"></i></div>
+                <div><h5 class="fw-bold mb-0">COD</h5><span class="pay-badge bg-success-subtle text-success">Phổ biến nhất</span></div>
+              </div>
+              <p class="text-muted small mb-2">Thanh toán bằng tiền mặt khi nhận hàng. Áp dụng toàn quốc, không thu thêm phí.</p>
+              <ul class="text-muted small mb-0 ps-3">
+                <li>Kiểm tra hàng trước khi trả tiền</li>
+                <li>Áp dụng cho đơn dưới 20 triệu</li>
+                <li>Phí COD: miễn phí</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="pay-card card shadow-sm border h-100 p-4">
+              <div class="d-flex align-items-center mb-3">
+                <div class="pay-icon me-3" style="background:#A50064;color:#fff;font-weight:800">MoMo</div>
+                <div><h5 class="fw-bold mb-0">Ví MoMo</h5><span class="pay-badge text-white" style="background:#A50064">Nhanh</span></div>
+              </div>
+              <p class="text-muted small mb-2">Thanh toán qua ví điện tử MoMo. Xử lý tức thì, nhận nhiều ưu đãi.</p>
+              <ul class="text-muted small mb-0 ps-3">
+                <li>Quét QR code hoặc liên kết ví</li>
+                <li>Xử lý trong 5 giây</li>
+                <li>Hoàn tiền 5% cho thành viên mới</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="pay-card card shadow-sm border h-100 p-4">
+              <div class="d-flex align-items-center mb-3">
+                <div class="pay-icon me-3" style="background:#0068FF;color:#fff;font-weight:800">Zalo<br>Pay</div>
+                <div><h5 class="fw-bold mb-0">ZaloPay</h5><span class="pay-badge text-white" style="background:#0068FF">Tiện lợi</span></div>
+              </div>
+              <p class="text-muted small mb-2">Thanh toán qua ví ZaloPay tích hợp trong ứng dụng Zalo.</p>
+              <ul class="text-muted small mb-0 ps-3">
+                <li>Một chạm thanh toán qua Zalo</li>
+                <li>Tích điểm thưởng Zalo Member</li>
+                <li>Hoàn tiền nhanh chóng</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="pay-card card shadow-sm border h-100 p-4">
+              <div class="d-flex align-items-center mb-3">
+                <div class="pay-icon bg-primary-subtle text-primary me-3"><i class="bi bi-credit-card-fill"></i></div>
+                <div><h5 class="fw-bold mb-0">Visa / Mastercard</h5><span class="pay-badge bg-primary-subtle text-primary">Quốc tế</span></div>
+              </div>
+              <p class="text-muted small mb-2">Thanh toán bằng thẻ tín dụng, ghi nợ Visa và Mastercard.</p>
+              <ul class="text-muted small mb-0 ps-3">
+                <li>Bảo mật SSL 256-bit</li>
+                <li>Hỗ trợ 3D Secure</li>
+                <li>Trả góp 0% với thẻ tín dụng</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="pay-card card shadow-sm border h-100 p-4">
+              <div class="d-flex align-items-center mb-3">
+                <div class="pay-icon bg-info-subtle text-info me-3"><i class="bi bi-paypal"></i></div>
+                <div><h5 class="fw-bold mb-0">PayPal</h5><span class="pay-badge bg-info-subtle text-info">Toàn cầu</span></div>
+              </div>
+              <p class="text-muted small mb-2">Thanh toán qua tài khoản PayPal cho khách hàng quốc tế.</p>
+              <ul class="text-muted small mb-0 ps-3">
+                <li>Bảo vệ người mua PayPal</li>
+                <li>Hỗ trợ 200+ quốc gia</li>
+                <li>Chuyển đổi tự động</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="pay-card card shadow-sm border h-100 p-4">
+              <div class="d-flex align-items-center mb-3">
+                <div class="pay-icon bg-warning-subtle text-warning me-3"><i class="bi bi-bank"></i></div>
+                <div><h5 class="fw-bold mb-0">Chuyển khoản</h5><span class="pay-badge bg-warning-subtle text-warning">An toàn</span></div>
+              </div>
+              <p class="text-muted small mb-2">Chuyển khoản ngân hàng nội địa qua Internet Banking hoặc app ngân hàng.</p>
+              <ul class="text-muted small mb-0 ps-3">
+                <li>Hỗ trợ 30+ ngân hàng</li>
+                <li>Xử lý tự động 24/7</li>
+                <li>Hóa đơn điện tử VAT</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-5 mt-5">
+          <div class="col-lg-6">
+            <h2 class="fw-bold mb-4">Hướng dẫn thanh toán</h2>
+            <div class="pay-step"><div class="num">1</div><h6 class="fw-bold mb-1">Chọn phương thức</h6><p class="text-muted small mb-0">Tại trang thanh toán, chọn phương thức phù hợp với bạn.</p></div>
+            <div class="pay-step"><div class="num">2</div><h6 class="fw-bold mb-1">Xác nhận thông tin</h6><p class="text-muted small mb-0">Kiểm tra đơn hàng, địa chỉ giao hàng và tổng tiền.</p></div>
+            <div class="pay-step"><div class="num">3</div><h6 class="fw-bold mb-1">Hoàn tất thanh toán</h6><p class="text-muted small mb-0">Thực hiện giao dịch và nhận xác nhận đơn hàng qua email.</p></div>
+          </div>
+          <div class="col-lg-6">
+            <h2 class="fw-bold mb-4">Ngân hàng hỗ trợ</h2>
+            <div class="table-responsive bank-table">
+              <table class="table table-bordered mb-0">
+                <thead><tr><th>Ngân hàng</th><th>Chủ tài khoản</th><th>Số tài khoản</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Vietcombank</strong></td><td>CÔNG TY CP SHOPVN</td><td>1234 5678 9012</td></tr>
+                  <tr><td><strong>Techcombank</strong></td><td>CÔNG TY CP SHOPVN</td><td>1903 1234 5678</td></tr>
+                  <tr><td><strong>MB Bank</strong></td><td>CÔNG TY CP SHOPVN</td><td>9999 8888 7777</td></tr>
+                  <tr><td><strong>ACB</strong></td><td>CÔNG TY CP SHOPVN</td><td>5555 4444 3333</td></tr>
+                  <tr><td><strong>TPBank</strong></td><td>CÔNG TY CP SHOPVN</td><td>0000 1111 2222</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="text-muted small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i>Nội dung chuyển khoản: <strong>SHOPVN_[Mã đơn hàng]</strong></p>
+          </div>
+        </div>
+
+        <div class="accordion mt-5" id="payFaq">
+          <h2 class="fw-bold mb-4">Câu hỏi thường gặp</h2>
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#pf1">Thanh toán có an toàn không?</button></h2>
+            <div id="pf1" class="accordion-collapse collapse show" data-bs-parent="#payFaq"><div class="accordion-body text-muted small">Mọi giao dịch được mã hóa bằng SSL 256-bit và chuẩn bảo mật PCI DSS. ShopVN không lưu trữ thông tin thẻ của khách hàng.</div></div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pf2">Khi nào tiền được trừ?</button></h2>
+            <div id="pf2" class="accordion-collapse collapse" data-bs-parent="#payFaq"><div class="accordion-body text-muted small">Với MoMo/ZaloPay: trừ ngay khi xác nhận. Với thẻ tín dụng: trừ trong 24h. Với chuyển khoản: trừ khi ShopVN xác nhận nhận được tiền.</div></div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pf3">Có được trả góp không?</button></h2>
+            <div id="pf3" class="accordion-collapse collapse" data-bs-parent="#payFaq"><div class="accordion-body text-muted small">Có, ShopVN hỗ trợ trả góp 0% với thẻ tín dụng cho đơn hàng từ 3 triệu trở lên, kỳ hạn 3-12 tháng.</div></div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pf4">Hoàn tiền qua kênh nào?</button></h2>
+            <div id="pf4" class="accordion-collapse collapse" data-bs-parent="#payFaq"><div class="accordion-body text-muted small">Hoàn tiền 100% qua đúng phương thức bạn đã thanh toán, thời gian 3-7 ngày làm việc tùy ngân hàng.</div></div>
+          </div>
+        </div>
+
+        <div class="alert alert-success mt-5 d-flex align-items-start gap-3">
+          <i class="bi bi-shield-check fs-4"></i>
+          <div>
+            <h6 class="fw-bold mb-1">Cam kết bảo mật của ShopVN</h6>
+            <p class="mb-0 small">Chứng nhận PCI DSS Level 1 · Mã hóa SSL 256-bit · Tuân thủ quy định NHNN</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <main class="flex-grow-1 py-5">
-    <div class="container">
-      <div class="row g-4 mb-5">
-        <div class="col-md-6 col-lg-4">
-          <div class="card payment-card shadow-sm h-100">
-            <div class="card-body p-4 text-center">
-              <div class="payment-icon bg-warning bg-opacity-10 text-warning mx-auto mb-3">
-                <i class="bi bi-cash-coin"></i>
-              </div>
-              <h5 class="fw-bold mb-2">Cash on Delivery</h5>
-              <p class="text-muted small mb-3">Pay when you receive your order</p>
-              <ul class="list-unstyled text-start small">
-                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>No transaction fees</li>
-                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Safe and convenient</li>
-                <li><i class="bi bi-check2 text-success me-2"></i>Available nationwide</li>
-              </ul>
-              <span class="badge bg-warning text-dark">Most Popular</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-          <div class="card payment-card shadow-sm h-100">
-            <div class="card-body p-4 text-center">
-              <div class="payment-icon bg-primary bg-opacity-10 text-primary mx-auto mb-3">
-                <i class="bi bi-credit-card-2-front"></i>
-              </div>
-              <h5 class="fw-bold mb-2">Credit/Debit Card</h5>
-              <p class="text-muted small mb-3">Visa, Mastercard, JCB</p>
-              <ul class="list-unstyled text-start small">
-                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>3D Secure protection</li>
-                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>International checkout</li>
-                <li><i class="bi bi-check2 text-success me-2"></i>0% installment support</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-          <div class="card payment-card shadow-sm h-100">
-            <div class="card-body p-4 text-center">
-              <div class="payment-icon bg-info bg-opacity-10 text-info mx-auto mb-3">
-                <i class="bi bi-bank"></i>
-              </div>
-              <h5 class="fw-bold mb-2">ATM/Internet Banking</h5>
-              <p class="text-muted small mb-3">Direct bank transfer</p>
-              <ul class="list-unstyled text-start small">
-                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Linked to 40+ banks</li>
-                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>No transaction fees</li>
-                <li><i class="bi bi-check2 text-success me-2"></i>Quick verification</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-          <div class="card payment-card shadow-sm h-100">
-            <div class="card-body p-4 text-center">
-              <div class="payment-icon mx-auto mb-3 d-flex align-items-center justify-content-center" style="background:#a50064;color:#fff;border-radius:14px;width:56px;height:56px">
-                <i class="bi bi-wallet2"></i>
-              </div>
-              <h5 class="fw-bold mb-2">MoMo</h5>
-              <p class="text-muted small mb-3">MoMo e-wallet</p>
-              <ul class="list-unstyled text-start small">
-                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Instant checkout</li>
-                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>High security</li>
-                <li><i class="bi bi-check2 text-success me-2"></i>Attractive promotions</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-          <div class="card payment-card shadow-sm h-100">
-            <div class="card-body p-4 text-center">
-              <div class="payment-icon mx-auto mb-3 d-flex align-items-center justify-content-center" style="background:#0068ff;color:#fff;border-radius:14px;width:56px;height:56px">
-                <i class="bi bi-phone"></i>
-              </div>
-              <h5 class="fw-bold mb-2">ZaloPay</h5>
-              <p class="text-muted small mb-3">ZaloPay e-wallet</p>
-              <ul class="list-unstyled text-start small">
-                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Zalo integration</li>
-                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Quick checkout</li>
-                <li><i class="bi bi-check2 text-success me-2"></i>Instant cashback</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-          <div class="card payment-card shadow-sm h-100">
-            <div class="card-body p-4 text-center">
-              <div class="payment-icon bg-danger bg-opacity-10 text-danger mx-auto mb-3">
-                <i class="bi bi-shield-check"></i>
-              </div>
-              <h5 class="fw-bold mb-2">VNPay</h5>
-              <p class="text-muted small mb-3">VNPay payment gateway</p>
-              <ul class="list-unstyled text-start small">
-                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Multiple bank options</li>
-                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Safe and secure</li>
-                <li><i class="bi bi-check2 text-success me-2"></i>Bank-controlled security</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card border-0 shadow-sm" style="border-radius:16px">
-        <div class="card-body p-4">
-          <h4 class="fw-bold mb-4"><i class="bi bi-shield-lock text-success me-2"></i>Payment Security</h4>
-          <div class="row g-4">
-            <div class="col-md-4">
-              <div class="d-flex align-items-start">
-                <i class="bi bi-lock-fill text-success fs-4 me-3 mt-1"></i>
-                <div>
-                  <h6 class="fw-bold">256-bit SSL Encryption</h6>
-                  <p class="text-muted small mb-0">All transactions are encrypted with high-level security</p>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="d-flex align-items-start">
-                <i class="bi bi-person-check-fill text-success fs-4 me-3 mt-1"></i>
-                <div>
-                  <h6 class="fw-bold">3D Secure Authentication</h6>
-                  <p class="text-muted small mb-0">Protect your credit card with 2-layer verification</p>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="d-flex align-items-start">
-                <i class="bi bi-clock-history text-success fs-4 me-3 mt-1"></i>
-                <div>
-                  <h6 class="fw-bold">24/7 Monitoring</h6>
-                  <p class="text-muted small mb-0">Fraud detection system monitoring continuously</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-5 text-center">
-        <h4 class="fw-bold mb-4"><i class="bi bi-building text-primary me-2"></i>Partner Banks</h4>
-        <div class="d-flex justify-content-center">
-          <img src="images/bank/all-banks.png" alt="Partner Banks" class="img-fluid" style="max-width:720px;width:100%;height:auto;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.08)"/>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <div id="globalmart-footer"></div>
-  <div id="globalmart-chat"></div>
-  <script src="js/footer.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script><script src="js/auth.js"></script><script src="js/cart.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => Cart.updateCartUI());
+  </script>
+  <script src="js/footer-template.js"></script>
 </body>
 </html>

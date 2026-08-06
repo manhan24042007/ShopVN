@@ -71,8 +71,8 @@
         <ul class="list-unstyled">
           <li><a href="faq.html"     class="footer-link">Câu hỏi thường gặp</a></li>
           <li><a href="orders.html"  class="footer-link">Theo dõi đơn hàng</a></li>
-          <li><a href="#"            class="footer-link">Chính sách đổi trả</a></li>
-          <li><a href="#"            class="footer-link">Phương thức thanh toán</a></li>
+          <li><a href="return-policy.html"   class="footer-link">Chính sách đổi trả</a></li>
+          <li><a href="payment-methods.html" class="footer-link">Phương thức thanh toán</a></li>
           <li><a href="about.html"   class="footer-link">Về chúng tôi</a></li>
           <li><a href="admin.html"   class="footer-link"><i class="bi bi-speedometer2 me-1"></i>Admin</a></li>
         </ul>
