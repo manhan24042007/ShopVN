@@ -157,7 +157,7 @@ const Cart = (() => {
   }
 
   function getStoredDiscount() {
-    const d = sessionStorage.getItem('globalmart_discount');
+    const d = localStorage.getItem('shopvn_discount');
     return d ? JSON.parse(d).amount : 0;
   }
 
