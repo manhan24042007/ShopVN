@@ -358,6 +358,7 @@
   <script src="js/auth.js"></script>
   <script src="js/cart.js"></script>
   <script src="js/notifications.js"></script>
+  <script src="js/footer-template.js"></script>
   <script>
     /* ── State ──────────────────────────────────────────── */
     let currentStep  = 1;
@@ -489,7 +490,7 @@
       const msgEl  = document.getElementById('co_couponMsg');
       const result = Cart.applyDiscount(code);
       if (result) {
-        sessionStorage.setItem('shopvn_discount', JSON.stringify(result));
+        localStorage.setItem('shopvn_discount', JSON.stringify(result));
         discountAmt = result.amount;
         msgEl.innerHTML = `<div class="alert alert-success py-2 small"><i class="bi bi-check-circle me-2"></i>Mã <strong>${result.code}</strong>: giảm <strong>${result.percent}%</strong></div>`;
         renderSummary();
@@ -569,6 +570,7 @@
         const code = 'SVN' + Date.now().toString().slice(-8).toUpperCase();
         document.getElementById('orderCodeDisplay').textContent = '#' + code;
         Cart.clear();
+        discountAmt = 0; // ← reset discount trước khi render
         renderSummary(); // ← cập nhật sidebar
         if (typeof MiniCart !== 'undefined') MiniCart.refresh(); // ← cập nhật mini cart dropdown
         sessionStorage.removeItem('shopvn_discount');
