@@ -278,4 +278,12 @@ const API = (() => {
     getCategoryBadgeClass,
     escapeHtml,
   };
+
+  // Background warm-up: preload /products list into cache so individual product
+  // lookups can fall back to it instantly even if API is slow
+  setTimeout(() => {
+    if (typeof Cache !== 'undefined' && !Cache.get('/products')) {
+      getAllProducts().catch(() => {});
+    }
+  }, 500);
 })();

@@ -1,64 +1,62 @@
 /**
- * cache.js — API Response Cache (sessionStorage) + PWA utils
- * Giúp tránh gọi API lặp lại trong cùng một phiên
+ * cache.js — API Response Cache (localStorage 24h) + PWA utils
+ * Lưu trong localStorage để dữ liệu KHÔNG BỊ MẤT khi user refresh / đóng tab,
+ * giúp các trang so sánh / wishlist / cart-by-API hiển thị ngay cả khi API chậm.
  */
-
 const Cache = (() => {
   const PREFIX  = 'shopvn_cache_';
-  const TTL_MS  = 5 * 60 * 1000; // 5 phút
+  const TTL_MS  = 24 * 60 * 60 * 1000; // 24 giờ
 
   function key(endpoint) { return PREFIX + endpoint; }
 
   function get(endpoint) {
     try {
-      const raw = sessionStorage.getItem(key(endpoint));
+      const raw = localStorage.getItem(key(endpoint));
       if (!raw) return null;
       const { data, ts } = JSON.parse(raw);
-      if (Date.now() - ts > TTL_MS) { sessionStorage.removeItem(key(endpoint)); return null; }
+      if (Date.now() - ts > TTL_MS) { localStorage.removeItem(key(endpoint)); return null; }
       return data;
     } catch { return null; }
   }
 
   function set(endpoint, data) {
     try {
-      sessionStorage.setItem(key(endpoint), JSON.stringify({ data, ts: Date.now() }));
+      localStorage.setItem(key(endpoint), JSON.stringify({ data, ts: Date.now() }));
     } catch {
-      // sessionStorage full — clear old entries
+      // localStorage full — clear old entries
       clearExpired();
     }
   }
 
   function clearExpired() {
-    for (let i = sessionStorage.length - 1; i >= 0; i--) {
-      const k = sessionStorage.key(i);
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
       if (k && k.startsWith(PREFIX)) {
         try {
-          const { ts } = JSON.parse(sessionStorage.getItem(k));
-          if (Date.now() - ts > TTL_MS) sessionStorage.removeItem(k);
-        } catch { sessionStorage.removeItem(k); }
+          const { ts } = JSON.parse(localStorage.getItem(k));
+          if (Date.now() - ts > TTL_MS) localStorage.removeItem(k);
+        } catch { localStorage.removeItem(k); }
       }
     }
   }
 
   function clearAll() {
-    for (let i = sessionStorage.length - 1; i >= 0; i--) {
-      const k = sessionStorage.key(i);
-      if (k && k.startsWith(PREFIX)) sessionStorage.removeItem(k);
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(PREFIX)) localStorage.removeItem(k);
     }
   }
 
-  // Patch API.request để dùng cache
-  function patchAPI() {
-    if (typeof API === 'undefined') return;
-    const originalRequest = API._request;
-    if (!originalRequest) return;
-    // Already patched in api.js via cachedRequest
-  }
+  // Preload cache for `/products` ngay khi script load
+  (function preload() {
+    try {
+      const raw = localStorage.getItem(PREFIX + '/products');
+      if (!raw) return;
+      const { ts } = JSON.parse(raw);
+      if (Date.now() - ts <= TTL_MS) return;
+      localStorage.removeItem(PREFIX + '/products');
+    } catch {}
+  })();
 
   return { get, set, clearExpired, clearAll };
 })();
-
-
-/* ── Service Worker Registration (PWA) ──────────────── */
-// SW chỉ đăng ký sau khi user đã vào trang lần 2+ để tránh cache cũ
-// Không đăng ký tự động ở đây nữa

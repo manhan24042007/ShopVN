@@ -119,15 +119,32 @@ const Compare = (() => {
 
     const hideLoading = () => { if (loadEl) loadEl.classList.add('d-none'); };
 
-    try {
+    // Try fetching individual products; if API fails, fall back to cached `/products` list
+    let productsMap = {};
+
+    async function fetchWithFallback() {
       const results = await Promise.allSettled(ids.map(id => API.getProductById(id)));
+      const fulfilled = results.filter(r => r.status === 'fulfilled').map(r => r.value);
+      const failedIds = ids.filter((_, i) => results[i].status !== 'fulfilled');
+
+      if (failedIds.length === 0) return fulfilled;
+
+      // Try fallback: load full /products list (often cached, 1 request)
+      let all = null;
+      try { all = await API.getAllProducts(); } catch {}
+
+      const fromList = failedIds
+        .map(id => (all || []).find(p => p.id === id))
+        .filter(Boolean);
+
+      return [...fulfilled, ...fromList];
+    }
+
+    try {
+      const products = await fetchWithFallback();
       hideLoading();
       if (emptyEl) emptyEl.classList.add('d-none');
       if (tableWrap) tableWrap.style.display = 'block';
-
-      const products = results
-        .map((r, i) => r.status === 'fulfilled' ? r.value : { _failed: true, id: ids[i] })
-        .filter(p => !p._failed);
 
       if (products.length === 0) {
         if (body) body.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4"><i class="bi bi-exclamation-triangle me-2"></i>Không tải được sản phẩm nào. <a href="products.html">Thử lại</a></td></tr>`;
