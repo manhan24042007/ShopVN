@@ -32,6 +32,14 @@
     .saved-addr-card { border:1.5px solid #dee2e6; border-radius:10px; padding:.85rem 1rem; cursor:pointer; transition:all .2s; }
     .saved-addr-card:hover { border-color:#0d6efd; }
     .saved-addr-card.selected { border-color:#0d6efd; background:#e8f0fe; }
+    /* Modal backdrop fix cho mobile */
+    #successModal ~ .modal-backdrop,
+    #successModal + .modal-backdrop {
+      z-index: 1040 !important;
+    }
+    body.modal-open .modal-backdrop {
+      z-index: 1040 !important;
+    }
   </style>
 </head>
 <body style="min-height:100vh;display:flex;flex-direction:column">
@@ -585,8 +593,22 @@
         }
 
         const modalEl = document.getElementById('successModal');
-        const modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
+        // Tạo backdrop thủ công để đảm bảo che toàn màn hình
+        const backdrop = document.createElement('div');
+        backdrop.className = 'modal-backdrop fade show';
+        backdrop.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1040;';
+        document.body.appendChild(backdrop);
+        document.body.classList.add('modal-open');
+        document.body.style.overflow = 'hidden';
+        
+        const modal = new bootstrap.Modal(modalEl, { backdrop: false, keyboard: false });
         modal.show();
+        
+        modalEl.addEventListener('hidden.bs.modal', () => {
+          backdrop.remove();
+          document.body.classList.remove('modal-open');
+          document.body.style.overflow = '';
+        });
       }, 1800);
     }
 
