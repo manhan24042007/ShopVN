@@ -571,28 +571,30 @@
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
 
-      setTimeout(() => {
-        const code = 'SVN' + Date.now().toString().slice(-8).toUpperCase();
-        document.getElementById('orderCodeDisplay').textContent = '#' + code;
-        Cart.clear();
-        discountAmt = 0; // ← reset discount trước khi render
-        renderSummary(); // ← cập nhật sidebar
-        if (typeof MiniCart !== 'undefined') MiniCart.refresh(); // ← cập nhật mini cart dropdown
-        sessionStorage.removeItem('shopvn_discount');
+      // Use requestAnimationFrame + setTimeout for better mobile compatibility
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          const code = 'SVN' + Date.now().toString().slice(-8).toUpperCase();
+          document.getElementById('orderCodeDisplay').textContent = '#' + code;
+          Cart.clear();
+          discountAmt = 0;
+          renderSummary();
+          if (typeof MiniCart !== 'undefined') MiniCart.refresh();
+          sessionStorage.removeItem('shopvn_discount');
 
-        // Add notification
-        if (typeof Notifications !== 'undefined') {
-          Notifications.addNotification({
-            type: 'order', icon: 'bi-bag-check-fill', color: 'text-success',
-            title: 'Đặt hàng thành công!',
-            body: `Đơn #${code} đã được xác nhận. Cảm ơn bạn!`
-          });
-        }
+          if (typeof Notifications !== 'undefined') {
+            Notifications.addNotification({
+              type: 'order', icon: 'bi-bag-check-fill', color: 'text-success',
+              title: 'Đặt hàng thành công!',
+              body: `Đơn #${code} đã được xác nhận. Cảm ơn bạn!`
+            });
+          }
 
-        const modalEl = document.getElementById('successModal');
-        modalEl.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-      }, 1800);
+          const modalEl = document.getElementById('successModal');
+          modalEl.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+        }, 1800);
+      });
     }
 
     function closeSuccessModal() {
