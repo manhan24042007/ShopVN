@@ -63,6 +63,27 @@ const Compare = (() => {
           <button class="btn btn-outline-light btn-sm px-3" onclick="Compare.clear()"><i class="bi bi-x me-1"></i>Xóa</button>
         </div>
       </div>`;
+
+    // Also inject a floating compare button on non-compare pages so users always have a way to view compare
+    let fab = document.getElementById('compareFab');
+    const isComparePage = !!document.getElementById('compareBody');
+    if (!isComparePage) {
+      if (!fab) {
+        fab = document.createElement('a');
+        fab.id = 'compareFab';
+        fab.href = 'compare.html';
+        fab.className = 'btn btn-primary shadow-lg d-flex align-items-center justify-content-center';
+        fab.style.cssText = 'position:fixed;bottom:90px;right:20px;z-index:1049;border-radius:50px;padding:.65rem 1.1rem;font-weight:600;gap:.5rem';
+        fab.title = 'Xem so sánh';
+        fab.innerHTML = `<i class="bi bi-arrow-left-right fs-5"></i><span class="badge bg-danger rounded-pill ms-1" id="compareFabCount">${ids.length}</span>`;
+        document.body.appendChild(fab);
+      } else {
+        const c = document.getElementById('compareFabCount');
+        if (c) c.textContent = ids.length;
+      }
+    } else if (fab) {
+      fab.remove();
+    }
   }
 
   function updateButtons() {
@@ -93,11 +114,25 @@ const Compare = (() => {
       return;
     }
 
+    // Show how many products we expect (helps debug stuck spinners)
+    if (loadEl) loadEl.querySelector('p').textContent = `Đang tải ${ids.length} sản phẩm...`;
+
+    const hideLoading = () => { if (loadEl) loadEl.classList.add('d-none'); };
+
     try {
-      const products = await Promise.all(ids.map(id => API.getProductById(id)));
-      if (loadEl) loadEl.classList.add('d-none');
+      const results = await Promise.allSettled(ids.map(id => API.getProductById(id)));
+      hideLoading();
       if (emptyEl) emptyEl.classList.add('d-none');
       if (tableWrap) tableWrap.style.display = 'block';
+
+      const products = results
+        .map((r, i) => r.status === 'fulfilled' ? r.value : { _failed: true, id: ids[i] })
+        .filter(p => !p._failed);
+
+      if (products.length === 0) {
+        if (body) body.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4"><i class="bi bi-exclamation-triangle me-2"></i>Không tải được sản phẩm nào. <a href="products.html">Thử lại</a></td></tr>`;
+        return;
+      }
 
       // Helper: highlight best value
       const minPrice = Math.min(...products.map(p => p.price));
@@ -140,7 +175,7 @@ const Compare = (() => {
             </a>
           </td>`).join('')}</tr>`;
     } catch(err) {
-      if (loadEl) loadEl.classList.add('d-none');
+      hideLoading();
       if (body) body.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4"><i class="bi bi-exclamation-triangle me-2"></i>Không tải được sản phẩm. <a href="products.html">Thử lại</a></td></tr>`;
     }
   }
