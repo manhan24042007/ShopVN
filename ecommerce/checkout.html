@@ -331,22 +331,19 @@
     </div>
   </div>
 
-  <!-- Success Modal -->
-  <div class="modal fade" id="successModal" tabindex="-1" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 shadow">
-        <div class="modal-body text-center py-5 px-4">
-          <div style="width:80px;height:80px;background:#d1e7dd;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem">
-            <i class="bi bi-check-lg text-success" style="font-size:2.5rem"></i>
-          </div>
-          <h4 class="fw-bold mb-2">Đặt hàng thành công!</h4>
-          <p class="text-muted mb-1">Mã đơn hàng: <strong class="text-primary" id="orderCodeDisplay"></strong></p>
-          <p class="text-muted mb-4 small">Chúng tôi sẽ liên hệ xác nhận trong vòng 30 phút.</p>
-          <div class="d-flex gap-2 justify-content-center flex-wrap">
-            <a href="orders.html" class="btn btn-primary px-4"><i class="bi bi-bag-check me-2"></i>Xem đơn hàng</a>
-            <a href="index.html" class="btn btn-outline-secondary px-4"><i class="bi bi-house me-2"></i>Trang chủ</a>
-          </div>
-        </div>
+  <!-- Success Modal - Custom for mobile compatibility -->
+  <div id="successModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;align-items:center;justify-content:center">
+    <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85)" onclick="closeSuccessModal()"></div>
+    <div style="position:relative;background:#fff;border-radius:16px;padding:2.5rem 2rem;max-width:380px;width:calc(100% - 2rem);margin:1rem;text-align:center;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25)">
+      <div style="width:80px;height:80px;background:#d1e7dd;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem">
+        <i class="bi bi-check-lg text-success" style="font-size:2.5rem"></i>
+      </div>
+      <h4 class="fw-bold mb-2">Đặt hàng thành công!</h4>
+      <p class="text-muted mb-1">Mã đơn hàng: <strong class="text-primary" id="orderCodeDisplay"></strong></p>
+      <p class="text-muted mb-4 small">Chúng tôi sẽ liên hệ xác nhận trong vòng 30 phút.</p>
+      <div class="d-flex gap-2 justify-content-center flex-wrap">
+        <a href="orders.html" class="btn btn-primary px-4"><i class="bi bi-bag-check me-2"></i>Xem đơn hàng</a>
+        <a href="index.html" class="btn btn-outline-secondary px-4"><i class="bi bi-house me-2"></i>Trang chủ</a>
       </div>
     </div>
   </div>
@@ -593,23 +590,14 @@
         }
 
         const modalEl = document.getElementById('successModal');
-        // Tạo backdrop thủ công để đảm bảo che toàn màn hình
-        const backdrop = document.createElement('div');
-        backdrop.className = 'modal-backdrop fade show';
-        backdrop.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1040;';
-        document.body.appendChild(backdrop);
-        document.body.classList.add('modal-open');
+        modalEl.style.display = 'flex';
         document.body.style.overflow = 'hidden';
-        
-        const modal = new bootstrap.Modal(modalEl, { backdrop: false, keyboard: false });
-        modal.show();
-        
-        modalEl.addEventListener('hidden.bs.modal', () => {
-          backdrop.remove();
-          document.body.classList.remove('modal-open');
-          document.body.style.overflow = '';
-        });
       }, 1800);
+    }
+
+    function closeSuccessModal() {
+      document.getElementById('successModal').style.display = 'none';
+      document.body.style.overflow = '';
     }
 
     /* ── Helpers ─────────────────────────────────────── */
