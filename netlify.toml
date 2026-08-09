@@ -1,3 +1,2 @@
 [build]
-  base = "ShopVN/ecommerce"
   publish = "ShopVN/ecommerce"
