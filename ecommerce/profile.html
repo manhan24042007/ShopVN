@@ -201,11 +201,12 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/api.js"></script>
-  <script src="js/auth.js"></script>
+  <script src="js/firebase-config.js?v=20260807-auth-fix"></script>
+  <script src="js/auth.js?v=20260807-auth-fix"></script>
   <script src="js/cart.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      if (!Auth.requireAuth()) return;
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!await Auth.requireAuth()) return;
       loadProfile(); renderAddresses(); Cart.updateCartUI();
 
       // Sidebar nav
@@ -220,19 +221,19 @@
       });
 
       // Info form
-      document.getElementById('infoForm').addEventListener('submit', e => {
+      document.getElementById('infoForm').addEventListener('submit', async e => {
         e.preventDefault();
-        const r = Auth.updateProfile({ fullName: document.getElementById('infoName').value, phone: document.getElementById('infoPhone').value });
+        const r = await Auth.updateProfile({ fullName: document.getElementById('infoName').value, phone: document.getElementById('infoPhone').value });
         showSecAlert('infoAlert', r.ok ? 'Cập nhật thành công!' : r.error, r.ok ? 'success' : 'danger');
         if (r.ok) loadProfile();
       });
 
       // Security form
-      document.getElementById('secForm').addEventListener('submit', e => {
+      document.getElementById('secForm').addEventListener('submit', async e => {
         e.preventDefault();
         const np = document.getElementById('newPwd').value;
         if (np !== document.getElementById('cfmPwd').value) { showSecAlert('secAlert','Mật khẩu xác nhận không khớp.','danger'); return; }
-        const r = Auth.changePassword({ currentPassword: document.getElementById('curPwd').value, newPassword: np });
+        const r = await Auth.changePassword({ currentPassword: document.getElementById('curPwd').value, newPassword: np });
         showSecAlert('secAlert', r.ok ? 'Đã cập nhật mật khẩu thành công!' : r.error, r.ok ? 'success' : 'danger');
         if (r.ok) document.getElementById('secForm').reset();
       });
@@ -266,22 +267,22 @@
         </div>`).join('');
     }
 
-    function saveAddr() {
+    async function saveAddr() {
       const f = document.getElementById('addrForm'); if (!f.checkValidity()) { f.classList.add('was-validated'); return; }
-      Auth.addAddress({ name: document.getElementById('addrName').value, phone: document.getElementById('addrPhone').value, street: document.getElementById('addrStreet').value, district: document.getElementById('addrDistrict').value, city: document.getElementById('addrCity').value, ward: document.getElementById('addrWard').value });
+      await Auth.addAddress({ name: document.getElementById('addrName').value, phone: document.getElementById('addrPhone').value, street: document.getElementById('addrStreet').value, district: document.getElementById('addrDistrict').value, city: document.getElementById('addrCity').value, ward: document.getElementById('addrWard').value });
       bootstrap.Modal.getInstance(document.getElementById('addAddrModal')).hide();
       f.reset(); f.classList.remove('was-validated');
       renderAddresses();
       showToast('<i class="bi bi-check-circle me-2"></i>Đã thêm địa chỉ!', 'success');
     }
 
-    function delAddr(id) { if(confirm('Xóa địa chỉ này?')){ Auth.removeAddress(id); renderAddresses(); } }
+    async function delAddr(id) { if(confirm('Xóa địa chỉ này?')){ await Auth.removeAddress(id); renderAddresses(); } }
 
     function handleAvatar(input) {
       const file = input.files[0]; if (!file) return;
-      if (file.size > 2*1024*1024) { showToast('Ảnh tối đa 2MB.','warning'); return; }
+      if (file.size > 500*1024) { showToast('Ảnh tối đa 500KB khi lưu trong Firestore.','warning'); return; }
       const r = new FileReader();
-      r.onload = e => { Auth.updateProfile({ avatar: e.target.result }); document.getElementById('profileAvatar').src = e.target.result; showToast('<i class="bi bi-check-circle me-2"></i>Đã cập nhật ảnh!','success'); };
+      r.onload = async e => { const result = await Auth.updateProfile({ avatar: e.target.result }); if (result.ok) { document.getElementById('profileAvatar').src = e.target.result; showToast('<i class="bi bi-check-circle me-2"></i>Đã cập nhật ảnh!','success'); } else showToast(result.error, 'danger'); };
       r.readAsDataURL(file);
     }
 

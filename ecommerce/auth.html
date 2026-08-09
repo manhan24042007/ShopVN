@@ -185,10 +185,12 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="js/auth.js"></script>
+<script src="js/firebase-config.js?v=20260807-auth-fix"></script>
+<script src="js/auth.js?v=20260807-auth-fix"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    if (Auth.isLoggedIn()) { const p = new URLSearchParams(location.search); location.href = p.get('redirect') || 'index.html'; return; }
+  document.addEventListener('DOMContentLoaded', async () => {
+    await Auth.ready();
+    if (Auth.isLoggedIn()) { const p = new URLSearchParams(location.search); location.href = p.get('redirect') || (Auth.isAdmin() ? 'admin.html' : 'index.html'); return; }
     if (new URLSearchParams(location.search).get('tab') === 'register') switchTab('register');
   });
 
@@ -208,19 +210,17 @@
   }
   function clearAlert() { const el = document.getElementById('authAlert'); el.className='d-none'; el.innerHTML=''; }
 
-  document.getElementById('loginForm').addEventListener('submit', e => {
+  document.getElementById('loginForm').addEventListener('submit', async e => {
     e.preventDefault(); clearAlert();
     const btn = document.getElementById('loginBtn');
     btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang đăng nhập...';
-    setTimeout(() => {
-      const r = Auth.login({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPassword').value });
+    const r = await Auth.login({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPassword').value });
       btn.disabled = false; btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập';
-      if (r.ok) { showAlert(`Chào mừng trở lại <strong>${r.user.fullName}</strong>!`, 'success'); setTimeout(() => { const p = new URLSearchParams(location.search); location.href = p.get('redirect') || 'index.html'; }, 800); }
+      if (r.ok) { showAlert(`Chào mừng trở lại <strong>${r.user.fullName}</strong>!`, 'success'); setTimeout(() => { const p = new URLSearchParams(location.search); location.href = p.get('redirect') || (r.user.role === 'admin' ? 'admin.html' : 'index.html'); }, 800); }
       else showAlert(r.error);
-    }, 600);
   });
 
-  document.getElementById('registerForm').addEventListener('submit', e => {
+  document.getElementById('registerForm').addEventListener('submit', async e => {
     e.preventDefault(); clearAlert();
     const pwd = document.getElementById('regPassword').value;
     const cfm = document.getElementById('regConfirm').value;
@@ -228,12 +228,10 @@
     if (!document.getElementById('agreeTerms').checked) { showAlert('Bạn cần đồng ý điều khoản sử dụng.'); return; }
     const btn = document.getElementById('registerBtn');
     btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang tạo tài khoản...';
-    setTimeout(() => {
-      const r = Auth.register({ fullName: document.getElementById('regName').value, email: document.getElementById('regEmail').value, phone: document.getElementById('regPhone').value, password: pwd });
+    const r = await Auth.register({ fullName: document.getElementById('regName').value, email: document.getElementById('regEmail').value, phone: document.getElementById('regPhone').value, password: pwd });
       btn.disabled = false; btn.innerHTML = '<i class="bi bi-person-plus me-2"></i>Tạo tài khoản';
       if (r.ok) { showAlert(`Chào mừng <strong>${r.user.fullName}</strong>! Tài khoản đã tạo thành công.`, 'success'); setTimeout(() => location.href = 'index.html', 900); }
       else showAlert(r.error);
-    }, 700);
   });
 
   function checkStrength(pwd) {
@@ -257,11 +255,14 @@
 
   function showForgot() { new bootstrap.Modal(document.getElementById('forgotModal')).show(); }
 
-  function sendForgot() {
+  async function sendForgot() {
     const email = document.getElementById('forgotEmail').value.trim();
     const msg = document.getElementById('forgotMsg');
     if (!email) { msg.innerHTML = '<div class="alert alert-danger py-2 small">Vui lòng nhập email.</div>'; return; }
-    msg.innerHTML = '<div class="alert alert-success py-2 small"><i class="bi bi-check-circle me-2"></i>Nếu email tồn tại, hướng dẫn đặt lại đã được gửi!</div>';
+    const result = await Auth.sendPasswordReset(email);
+    msg.innerHTML = result.ok
+      ? '<div class="alert alert-success py-2 small"><i class="bi bi-check-circle me-2"></i>Nếu email tồn tại, hướng dẫn đặt lại đã được gửi!</div>'
+      : `<div class="alert alert-danger py-2 small">${result.error}</div>`;
   }
 </script>
 </body>

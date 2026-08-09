@@ -38,20 +38,36 @@
     /* ===== Sidebar ===== */
     .admin-sidebar {
       position: fixed;
-      top: 0;
-      left: 0;
+      inset: 0 auto 0 0;
       width: 260px;
-      height: 100vh;
+      height: auto;
+      min-height: 0;
+      max-height: none;
       background: var(--admin-sidebar);
       z-index: 1050;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
       transition: transform 0.3s ease;
+      box-shadow: 4px 0 18px rgba(15, 23, 42, 0.08);
+      contain: layout paint;
+    }
+
+    /* Persistent background prevents gaps during browser zoom/mobile scroll. */
+    .admin-sidebar::before {
+      content: '';
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: inherit;
+      background: var(--admin-sidebar);
+      z-index: -1;
+      pointer-events: none;
     }
 
     .admin-sidebar .sidebar-header {
       padding: 1.5rem;
       border-bottom: 1px solid rgba(255,255,255,0.1);
+      flex: 0 0 auto;
     }
 
     .admin-sidebar .sidebar-header .brand {
@@ -78,9 +94,13 @@
 
     .admin-sidebar .sidebar-nav {
       flex: 1;
+      min-height: 0;
       overflow-y: auto;
+      overflow-x: hidden;
       padding: 1rem 0;
       overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,.18) transparent;
     }
 
     .admin-sidebar .nav-section {
@@ -140,6 +160,9 @@
     .admin-sidebar .sidebar-footer {
       padding: 1rem 1.5rem;
       border-top: 1px solid rgba(255,255,255,0.1);
+      flex: 0 0 auto;
+      background: var(--admin-sidebar);
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
     }
 
     .admin-sidebar .user-card {
@@ -1285,7 +1308,12 @@
 
     @media (max-width: 991px) {
       .admin-sidebar {
+        width: min(280px, 86vw);
         transform: translateX(-100%);
+      }
+
+      .admin-sidebar::before {
+        width: min(280px, 86vw);
       }
 
       .admin-sidebar.show {
@@ -1648,13 +1676,7 @@
         <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
           <span class="text-muted small">Hiển thị <span id="productCount">0</span> sản phẩm</span>
           <nav>
-            <ul class="pagination pagination-sm mb-0">
-              <li class="page-item disabled"><a class="page-link" href="#">‹</a></li>
-              <li class="page-item active"><a class="page-link" href="#">1</a></li>
-              <li class="page-item"><a class="page-link" href="#">2</a></li>
-              <li class="page-item"><a class="page-link" href="#">3</a></li>
-              <li class="page-item"><a class="page-link" href="#">›</a></li>
-            </ul>
+            <ul class="pagination pagination-sm mb-0" id="productPagination"></ul>
           </nav>
         </div>
       </div>
@@ -2353,16 +2375,18 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/firebase-config.js?v=20260807-product-crud"></script>
+  <script src="js/auth.js?v=20260807-auth-fix"></script>
   <script>
     // ===== Data =====
-    const STATS = [
+    let STATS = [
       { label: 'Doanh thu tháng', value: '124.800.000đ', trend: '+18%', up: true, icon: 'bi-currency-dollar', color: 'primary' },
       { label: 'Đơn hàng mới', value: '142', trend: '+7%', up: true, icon: 'bi-bag-check', color: 'success' },
       { label: 'Khách hàng', value: '1.024', trend: '+12%', up: true, icon: 'bi-people', color: 'warning' },
       { label: 'Tỉ lệ chuyển đổi', value: '3.2%', trend: '-0.4%', up: false, icon: 'bi-graph-down', color: 'danger' },
     ];
 
-    const REVENUE = [
+    let REVENUE = [
       { day: 'T2', value: 320 },
       { day: 'T3', value: 480 },
       { day: 'T4', value: 290 },
@@ -2372,31 +2396,37 @@
       { day: 'CN', value: 920 },
     ];
 
-    const COUPONS = [
+    let COUPONS = [
       { code: 'SUMMER2026', desc: 'Giảm 20% cho đơn hàng từ 500K', type: 'percent', value: 20, used: 142, limit: 500, status: 'active' },
       { code: 'FREESHIP', desc: 'Miễn phí vận chuyển', type: 'fixed', value: 0, used: 89, limit: 200, status: 'active' },
       { code: 'NEWUSER50', desc: 'Giảm 50K cho đơn đầu tiên', type: 'fixed', value: 50000, used: 256, limit: 1000, status: 'active' },
     ];
 
-    const REVIEWS = [
+    let REVIEWS = [
       { name: 'Nguyễn Văn A', product: 'iPhone 15 Pro Max', rating: 5, content: 'Sản phẩm rất tốt, giao hàng nhanh, đóng gói cẩn thận. Sẽ ủng hộ shop tiếp!', date: '2 giờ trước', approved: false },
       { name: 'Trần Thị B', product: 'Tai nghe Bluetooth', rating: 4, content: 'Chất lượng tốt, âm thanh hay. Pin trâu. Giá hơi cao so với thị trường.', date: '5 giờ trước', approved: true },
       { name: 'Phạm Văn C', product: 'Áo sơ mi nam', rating: 5, content: 'Vải đẹp, mặc rất thoải mái. Shop tư vấn nhiệt tình.', date: '1 ngày trước', approved: false },
     ];
 
     let allProducts = [];
+    let editingProductId = null;
+    let currentProductPage = 1;
+    let currentProductView = [];
+    const PRODUCTS_PER_PAGE = 8;
     let allOrders = [];
     let allCustomers = [];
+    let ADMIN_ORDERS = [];
+    let ADMIN_SHIPPING = [];
+    let ADMIN_SETTINGS = {};
 
     // ===== API Helper (Mock) =====
     const API = {
       async getAllProducts() {
-        const res = await fetch('https://fakestoreapi.com/products');
-        return await res.json();
+        const products = await FirebaseService.getProducts();
+        return products.filter(product => product.active !== false);
       },
       async getLimitedProducts(limit = 5) {
-        const res = await fetch(`https://fakestoreapi.com/products?limit=${limit}`);
-        return await res.json();
+        return (await this.getAllProducts()).slice(0, limit);
       },
       formatPrice(price) {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
@@ -2415,6 +2445,25 @@
         return classes[category] || 'bg-secondary-subtle text-secondary';
       }
     };
+
+    async function loadAdminDashboard() {
+      try {
+        const data = await FirebaseService.getAdminData('dashboard');
+        if (!data) return;
+        if (Array.isArray(data.stats)) STATS = data.stats;
+        if (Array.isArray(data.revenue)) REVENUE = data.revenue;
+        if (Array.isArray(data.orders)) ADMIN_ORDERS = data.orders;
+        if (Array.isArray(data.customers)) allCustomers = data.customers;
+        if (Array.isArray(data.promotions)) PROMOTIONS = data.promotions;
+        if (Array.isArray(data.coupons)) COUPONS = data.coupons;
+        if (Array.isArray(data.reviews)) REVIEWS = data.reviews;
+        if (Array.isArray(data.shipping)) ADMIN_SHIPPING = data.shipping;
+        if (data.settings && typeof data.settings === 'object') ADMIN_SETTINGS = data.settings;
+      } catch (err) {
+        console.error('Không tải được dữ liệu quản trị từ Firestore:', err);
+        showToast('Không tải được dữ liệu quản trị từ Firebase.', 'warning');
+      }
+    }
 
     // ===== Dashboard =====
     function renderStats() {
@@ -2476,13 +2525,19 @@
     function renderRecentOrders() {
       const list = document.getElementById('recentOrders');
       if (!list) return;
-      const orders = [
+      const orders = ADMIN_ORDERS.slice(0, 5);
+      if (!orders.length) {
+        list.innerHTML = '<div class="p-4 text-muted">Chưa có đơn hàng.</div>';
+        return;
+      }
+      /* fallback shape is normalized by loadAdminDashboard */
+      /*
         { id: 'SVN001', customer: 'Nguyễn Minh Tuấn', total: '1.099.500đ', status: 'delivered' },
         { id: 'SVN002', customer: 'Trần Thị Lan', total: '559.900đ', status: 'shipped' },
         { id: 'SVN003', customer: 'Phạm Văn Đức', total: '6.950.000đ', status: 'processing' },
         { id: 'SVN004', customer: 'Lê Thị Hoa', total: '199.900đ', status: 'cancelled' },
         { id: 'SVN005', customer: 'Hoàng Văn Minh', total: '899.000đ', status: 'shipped' },
-      ];
+      ]; */
       const statusLabels = {
         delivered: 'Đã giao',
         shipped: 'Đang giao',
@@ -2520,12 +2575,18 @@
       }
     }
 
-    function renderProductsTable(products) {
+    function renderProductsTable(products, resetPage = false) {
       const tbody = document.querySelector('#productsTable tbody');
       const count = document.getElementById('productCount');
-      
-      count.textContent = products.length;
-      tbody.innerHTML = products.slice(0, 20).map(p => `
+      currentProductView = products;
+      if (resetPage) currentProductPage = 1;
+      const totalPages = Math.max(1, Math.ceil(products.length / PRODUCTS_PER_PAGE));
+      currentProductPage = Math.min(Math.max(1, currentProductPage), totalPages);
+      const start = (currentProductPage - 1) * PRODUCTS_PER_PAGE;
+      const pageProducts = products.slice(start, start + PRODUCTS_PER_PAGE);
+
+      count.textContent = products.length ? `${start + 1}–${start + pageProducts.length} / ${products.length}` : '0';
+      tbody.innerHTML = pageProducts.map(p => `
         <tr>
           <td>
             <div class="d-flex align-items-center gap-2">
@@ -2535,7 +2596,7 @@
           </td>
           <td><span class="badge ${API.getCategoryBadgeClass(p.category)}">${API.getCategoryLabel(p.category)}</span></td>
           <td class="fw-bold text-primary">${API.formatPrice(p.price)}</td>
-          <td><span class="badge bg-success-subtle text-success">${Math.floor(Math.random() * 100) + 10}</span></td>
+          <td><span class="badge bg-success-subtle text-success">${Number(p.stock ?? 50)}</span></td>
           <td><span class="text-warning">★</span> ${p.rating.rate} <span class="text-muted">(${p.rating.count})</span></td>
           <td><span class="badge-status delivered"><i class="bi bi-check-circle"></i> Còn hàng</span></td>
           <td>
@@ -2544,13 +2605,38 @@
             <button class="btn-action delete" onclick="deleteProduct(${p.id})"><i class="bi bi-trash"></i></button>
           </td>
         </tr>
-      `).join('');
+      `).join('') || '<tr><td colspan="7" class="text-center py-4 text-muted">Không có sản phẩm phù hợp.</td></tr>';
+      renderProductPagination(totalPages);
+    }
+
+    function renderProductPagination(totalPages) {
+      const pagination = document.getElementById('productPagination');
+      if (!pagination) return;
+      const button = (label, page, disabled = false, active = false) => `
+        <li class="page-item ${disabled ? 'disabled' : ''} ${active ? 'active' : ''}">
+          <button type="button" class="page-link" ${disabled ? 'disabled' : ''} onclick="goToProductPage(${page})">${label}</button>
+        </li>`;
+      let html = button('‹', currentProductPage - 1, currentProductPage === 1);
+      for (let page = 1; page <= totalPages; page++) {
+        html += button(page, page, false, page === currentProductPage);
+      }
+      html += button('›', currentProductPage + 1, currentProductPage === totalPages);
+      pagination.innerHTML = html;
+    }
+
+    function goToProductPage(page) {
+      const totalPages = Math.max(1, Math.ceil(currentProductView.length / PRODUCTS_PER_PAGE));
+      if (page < 1 || page > totalPages || page === currentProductPage) return;
+      currentProductPage = page;
+      renderProductsTable(currentProductView);
+      document.getElementById('productsTable')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function openProductModal(id = null) {
       const modal = new bootstrap.Modal(document.getElementById('productModal'));
       const title = document.getElementById('productModalTitle');
       
+      editingProductId = id;
       if (id) {
         title.innerHTML = '<i class="bi bi-pencil me-2"></i>Sửa sản phẩm';
         const product = allProducts.find(p => p.id === id);
@@ -2558,6 +2644,8 @@
           document.getElementById('productName').value = product.title;
           document.getElementById('productCategory').value = product.category;
           document.getElementById('productPrice').value = product.price;
+          document.getElementById('productStock').value = product.stock ?? 50;
+          document.getElementById('productRating').value = product.rating?.rate ?? 0;
           document.getElementById('productDesc').value = product.description || '';
           document.getElementById('productImage').value = product.image;
         }
@@ -2565,6 +2653,8 @@
         title.innerHTML = '<i class="bi bi-plus-circle me-2"></i>Thêm sản phẩm mới';
         document.getElementById('productName').value = '';
         document.getElementById('productPrice').value = '';
+        document.getElementById('productStock').value = '50';
+        document.getElementById('productRating').value = '0';
         document.getElementById('productDesc').value = '';
         document.getElementById('productImage').value = '';
       }
@@ -2572,29 +2662,65 @@
       modal.show();
     }
 
-    function saveProduct() {
-      showToast('Sản phẩm đã được lưu!', 'success');
-      bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+    async function saveProduct() {
+      const title = document.getElementById('productName').value.trim();
+      const category = document.getElementById('productCategory').value;
+      const price = Number(document.getElementById('productPrice').value);
+      const image = document.getElementById('productImage').value.trim();
+      if (!title || !category || !Number.isFinite(price) || price < 0 || !image) {
+        showToast('Vui lòng nhập đầy đủ tên, danh mục, giá và hình ảnh.', 'warning');
+        return;
+      }
+      const existing = editingProductId ? allProducts.find(p => p.id === editingProductId) : null;
+      const id = editingProductId || Math.max(0, ...allProducts.map(p => Number(p.id) || 0)) + 1;
+      const product = {
+        id, title, category, price, image,
+        description: document.getElementById('productDesc').value.trim(),
+        stock: Math.max(0, Number(document.getElementById('productStock').value) || 0),
+        sales: existing?.sales || 0,
+        rating: {
+          rate: Math.min(5, Math.max(0, Number(document.getElementById('productRating').value) || 0)),
+          count: existing?.rating?.count || 0,
+        },
+        active: true,
+      };
+      try {
+        await FirebaseService.saveProducts([product]);
+        const index = allProducts.findIndex(p => p.id === id);
+        if (index >= 0) allProducts[index] = product; else allProducts.unshift(product);
+        renderProductsTable(allProducts);
+        bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+        editingProductId = null;
+        showToast(existing ? 'Đã cập nhật sản phẩm trên Firebase!' : 'Đã thêm sản phẩm vào Firebase!', 'success');
+      } catch (err) {
+        showToast(API.escapeHtml(err.message || 'Không thể lưu sản phẩm.'), 'danger');
+      }
     }
 
     function viewProduct(id) {
-      showToast('Đang mở chi tiết sản phẩm...', 'info');
+      window.open(`product-detail.html?id=${id}`, '_blank', 'noopener');
     }
 
     function editProduct(id) {
       openProductModal(id);
     }
 
-    function deleteProduct(id) {
+    async function deleteProduct(id) {
       if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-        showToast('Đã xóa sản phẩm!', 'success');
-        loadProducts();
+        try {
+          await FirebaseService.deleteProduct(id);
+          allProducts = allProducts.filter(product => product.id !== id);
+          renderProductsTable(allProducts);
+          showToast('Đã xóa sản phẩm khỏi Firebase!', 'success');
+        } catch (err) {
+          showToast(API.escapeHtml(err.message || 'Không thể xóa sản phẩm.'), 'danger');
+        }
       }
     }
 
     // ===== Orders =====
     function loadOrders() {
-      const orders = [
+      const orders = ADMIN_ORDERS.length ? ADMIN_ORDERS : [
         { id: 'SVN001', customer: 'Nguyễn Minh Tuấn', date: '01/08/2026', items: 3, total: '1.099.500đ', payment: 'Thanh toán online', status: 'delivered' },
         { id: 'SVN002', customer: 'Trần Thị Lan', date: '01/08/2026', items: 1, total: '559.900đ', payment: 'COD', status: 'shipping' },
         { id: 'SVN003', customer: 'Phạm Văn Đức', date: '02/08/2026', items: 5, total: '6.950.000đ', payment: 'Thanh toán online', status: 'processing' },
@@ -2643,7 +2769,7 @@
       // In real app, this would open an order detail modal/page
     }
 
-    function updateOrderStatus(id) {
+    async function updateOrderStatus(id) {
       // Show a selection of new statuses
       const statuses = ['Chờ xử lý', 'Đang xử lý', 'Đang giao', 'Hoàn thành', 'Đã hủy'];
       const statusValues = ['processing', 'processing', 'shipping', 'delivered', 'cancelled'];
@@ -2659,6 +2785,8 @@
       // Simple implementation: just cycle to next status
       const nextIdx = (currentIdx + 1) % statusValues.length;
       currentOrder.status = statusValues[nextIdx];
+      ADMIN_ORDERS = allOrders;
+      await FirebaseService.saveAdminData({ orders: ADMIN_ORDERS });
       renderOrdersTable(allOrders);
       showToast(`Đã cập nhật đơn #${id} → ${statuses[nextIdx]}`, 'success');
     }
@@ -2683,7 +2811,7 @@
     // ===== Customers =====
     function loadCustomers() {
       const tbody = document.querySelector('#customersTable tbody');
-      const customers = [
+      const customers = allCustomers.length ? allCustomers : [
         { name: 'Nguyễn Văn A', email: 'nguyenvana@email.com', phone: '0912 345 678', orders: 5, total: '5.450.000đ', date: '15/01/2026', status: 'active' },
         { name: 'Trần Thị B', email: 'tranthib@email.com', phone: '0987 654 321', orders: 3, total: '2.890.000đ', date: '22/02/2026', status: 'active' },
         { name: 'Phạm Văn C', email: 'phamvanc@email.com', phone: '0901 234 567', orders: 8, total: '12.500.000đ', date: '10/03/2026', status: 'vip' },
@@ -2796,8 +2924,35 @@
       showToast('Đang cập nhật trạng thái...', 'info');
     }
 
+    function renderShippingData() {
+      const tbody = document.getElementById('shippingTable');
+      if (!tbody || !ADMIN_SHIPPING.length) return;
+      const labels = { delivered: 'Đã giao', shipping: 'Đang giao', processing: 'Chờ lấy hàng' };
+      tbody.innerHTML = ADMIN_SHIPPING.map(item => `
+        <tr>
+          <td class="fw-semibold">${API.escapeHtml(item.code)}</td>
+          <td>#${API.escapeHtml(item.orderId)}</td>
+          <td><span class="badge bg-primary-subtle text-primary">${API.escapeHtml(item.carrier)}</span></td>
+          <td>${API.escapeHtml(ADMIN_ORDERS.find(o => o.id === item.orderId)?.customer || 'Khách hàng')}</td>
+          <td><span class="badge-status ${item.status}">${labels[item.status] || item.status}</span></td>
+          <td><button class="btn-action view" onclick="viewShipping('${API.escapeHtml(item.code)}')"><i class="bi bi-eye"></i></button></td>
+        </tr>`).join('');
+    }
+
+    function renderSettingsData() {
+      const map = {
+        'Thông báo email': 'emailNotifications',
+        'Chế độ bảo trì': 'maintenanceMode',
+      };
+      document.querySelectorAll('#sec-settings .settings-item').forEach(item => {
+        const key = map[item.querySelector('.item-title')?.textContent.trim()];
+        const input = item.querySelector('input[type="checkbox"]');
+        if (key && input && key in ADMIN_SETTINGS) input.checked = !!ADMIN_SETTINGS[key];
+      });
+    }
+
     // ===== Promotions =====
-    const PROMOTIONS = [
+    let PROMOTIONS = [
       { id: 1, name: 'Flash Sale Cuối Tuần', type: 'flash', discount: '-30%', apply: 'Tất cả sản phẩm', time: '02-03/08/2026', status: 'active' },
       { id: 2, name: 'Miễn phí vận chuyển', type: 'freeship', discount: '0đ', apply: 'Đơn từ 500.000đ', time: '01-31/08/2026', status: 'delivered' },
       { id: 3, name: 'First Order Discount', type: 'newuser', discount: '-50.000đ', apply: 'Đơn đầu tiên', time: 'Vĩnh viễn', status: 'delivered' },
@@ -2859,7 +3014,7 @@
       modal.show();
     }
 
-    function saveCoupon() {
+    async function saveCoupon() {
       const code = document.getElementById('couponCode').value;
       if (!code) {
         showToast('Vui lòng nhập mã giảm giá!', 'warning');
@@ -2876,7 +3031,7 @@
         limit: parseInt(document.getElementById('couponUsage').value) || 100,
         status: 'active'
       });
-      
+      await FirebaseService.saveAdminData({ coupons: COUPONS });
       renderCoupons();
       bootstrap.Modal.getInstance(document.getElementById('couponModal')).hide();
       showToast(`Mã ${code.toUpperCase()} đã được tạo!`, 'success');
@@ -2886,8 +3041,11 @@
       showToast(`Đang chỉnh sửa khuyến mãi #${id}...`, 'info');
     }
 
-    function deletePromotion(id) {
+    async function deletePromotion(id) {
       if (confirm('Bạn có chắc muốn xóa khuyến mãi này?')) {
+        PROMOTIONS = PROMOTIONS.filter(p => p.id !== id);
+        await FirebaseService.saveAdminData({ promotions: PROMOTIONS });
+        renderPromotionsTable();
         showToast('Đã xóa khuyến mãi!', 'success');
       }
     }
@@ -2945,20 +3103,22 @@
       `).join('');
     }
 
-    function approveReview(name) {
+    async function approveReview(name) {
       const review = REVIEWS.find(r => r.name === name);
       if (review) {
         review.approved = true;
+        await FirebaseService.saveAdminData({ reviews: REVIEWS });
         renderReviews();
         showToast('Đã duyệt đánh giá!', 'success');
       }
     }
 
-    function rejectReview(name) {
+    async function rejectReview(name) {
       if (confirm('Bạn có chắc muốn từ chối đánh giá này?')) {
         const idx = REVIEWS.findIndex(r => r.name === name);
         if (idx > -1) {
           REVIEWS.splice(idx, 1);
+          await FirebaseService.saveAdminData({ reviews: REVIEWS });
           renderReviews();
           showToast('Đã từ chối đánh giá!', 'info');
         }
@@ -3040,7 +3200,20 @@
     }
 
     // ===== Init =====
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = await Auth.ready();
+      if (!user) {
+        location.replace('auth.html?redirect=admin.html');
+        return;
+      }
+      if (!Auth.isAdmin()) {
+        alert('Bạn không có quyền truy cập trang quản trị.');
+        location.replace('index.html');
+        return;
+      }
+      await loadAdminDashboard();
+      renderShippingData();
+      renderSettingsData();
       // Nav items
       document.querySelectorAll('.nav-item[data-section]').forEach(item => {
         item.addEventListener('click', e => {
@@ -3056,13 +3229,13 @@
           p.title.toLowerCase().includes(query) ||
           p.category.toLowerCase().includes(query)
         );
-        renderProductsTable(filtered);
+        renderProductsTable(filtered, true);
       });
 
       document.getElementById('categoryFilter')?.addEventListener('change', (e) => {
         const cat = e.target.value;
         const filtered = cat ? allProducts.filter(p => p.category === cat) : allProducts;
-        renderProductsTable(filtered);
+        renderProductsTable(filtered, true);
       });
 
       // Order status filter
@@ -3104,8 +3277,13 @@
 
       // Toggle switches in settings
       document.querySelectorAll('.toggle-switch input').forEach(toggle => {
-        toggle.addEventListener('change', (e) => {
+        toggle.addEventListener('change', async (e) => {
           const title = e.target.closest('.settings-item')?.querySelector('.item-title')?.textContent || 'Cài đặt';
+          const settingKeys = { 'Thông báo email': 'emailNotifications', 'Chế độ bảo trì': 'maintenanceMode' };
+          if (settingKeys[title]) {
+            ADMIN_SETTINGS[settingKeys[title]] = e.target.checked;
+            await FirebaseService.saveAdminData({ settings: ADMIN_SETTINGS });
+          }
           showToast(`${title}: ${e.target.checked ? 'Bật' : 'Tắt'}`, 'success');
         });
       });

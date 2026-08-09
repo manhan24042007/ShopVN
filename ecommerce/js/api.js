@@ -94,27 +94,41 @@ const API = (() => {
   // ---------- Public API Methods ----------
 
   async function getAllProducts() {
+    if (typeof FirebaseService !== 'undefined') {
+      try {
+        const products = await FirebaseService.getProducts();
+        if (products.length) return products.filter(p => p.active !== false);
+      } catch (err) { console.warn('Firestore products unavailable, using FakeStore API.', err); }
+    }
     return request('/products');
   }
 
   async function getProductById(id) {
+    if (typeof FirebaseService !== 'undefined') {
+      try {
+        const product = await FirebaseService.getProduct(id);
+        if (product && product.active !== false) return product;
+      } catch (err) { console.warn('Firestore product unavailable, using FakeStore API.', err); }
+    }
     return request(`/products/${id}`);
   }
 
   async function getProductsByCategory(category) {
-    return request(`/products/category/${encodeURIComponent(category)}`);
+    const products = await getAllProducts();
+    return products.filter(product => product.category === category);
   }
 
   async function getAllCategories() {
-    return request('/products/categories');
+    const products = await getAllProducts();
+    return [...new Set(products.map(product => product.category).filter(Boolean))].sort();
   }
 
   async function getLimitedProducts(limit = 8) {
-    return request(`/products?limit=${limit}`);
+    return (await getAllProducts()).slice(0, limit);
   }
 
   async function getSortedProducts(sort = 'asc') {
-    return request(`/products?sort=${sort}`);
+    return (await getAllProducts()).sort((a, b) => sort === 'desc' ? b.id - a.id : a.id - b.id);
   }
 
   // ---------- Product Card Template ----------

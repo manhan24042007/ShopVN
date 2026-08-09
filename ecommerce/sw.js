@@ -1,10 +1,10 @@
 /**
- * sw.js — Service Worker v4
+ * sw.js — Service Worker v5
  * Xóa toàn bộ cache cũ khi activate
  */
 
-const CACHE_NAME   = 'shopvn-v4';
-const STATIC_CACHE = 'shopvn-static-v4';
+const CACHE_NAME   = 'shopvn-v5';
+const STATIC_CACHE = 'shopvn-static-v5';
 
 const STATIC_ASSETS = [
   '/index.html',
@@ -52,6 +52,22 @@ self.addEventListener('fetch', event => {
           return res;
         })
         .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // HTML and application JavaScript — network first so deployments do not
+  // keep running an obsolete authentication implementation.
+  const isAppCode = event.request.mode === 'navigate'
+    || (url.origin === self.location.origin && (url.pathname.endsWith('.html') || url.pathname.endsWith('.js')));
+  if (isAppCode) {
+    event.respondWith(
+      fetch(event.request)
+        .then(res => {
+          if (res.ok) caches.open(STATIC_CACHE).then(c => c.put(event.request, res.clone()));
+          return res;
+        })
+        .catch(() => caches.match(event.request).then(cached => cached || caches.match('/404.html')))
     );
     return;
   }

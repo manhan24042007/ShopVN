@@ -1,0 +1,27 @@
+[debug] [2026-08-08T03:01:45.715Z] ----------------------------------------------------------------------
+[debug] [2026-08-08T03:01:45.718Z] Command:       /Users/mac/.nvm/versions/node/v24.15.0/bin/node /Users/mac/.npm/_npx/ba4f1959e38407b5/node_modules/.bin/firebase login --no-localhost
+[debug] [2026-08-08T03:01:45.718Z] CLI Version:   15.26.0
+[debug] [2026-08-08T03:01:45.718Z] Platform:      darwin
+[debug] [2026-08-08T03:01:45.718Z] Node Version:  v24.15.0
+[debug] [2026-08-08T03:01:45.718Z] Detected Agent: codex_cli
+[debug] [2026-08-08T03:01:45.718Z] Time:          Fri Aug 07 2026 20:01:45 GMT-0700 (Pacific Daylight Time)
+[debug] [2026-08-08T03:01:45.718Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-08-08T03:01:45.726Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2026-08-08T03:01:45.837Z] >>> [apiv2][query] POST https://auth.firebase.tools/attest [none]
+[debug] [2026-08-08T03:01:45.837Z] >>> [apiv2][body] POST https://auth.firebase.tools/attest {"session_id":"8b4496d7-b266-4234-9c8c-08163499dd36"}
+[debug] [2026-08-08T03:01:46.308Z] <<< [apiv2][status] POST https://auth.firebase.tools/attest 200
+[debug] [2026-08-08T03:04:09.927Z] ----------------------------------------------------------------------
+[debug] [2026-08-08T03:04:09.930Z] Command:       /Users/mac/.nvm/versions/node/v24.15.0/bin/node /Users/mac/.npm/_npx/ba4f1959e38407b5/node_modules/.bin/firebase login --reauth
+[debug] [2026-08-08T03:04:09.930Z] CLI Version:   15.26.0
+[debug] [2026-08-08T03:04:09.930Z] Platform:      darwin
+[debug] [2026-08-08T03:04:09.930Z] Node Version:  v24.15.0
+[debug] [2026-08-08T03:04:09.930Z] Detected Agent: codex_cli
+[debug] [2026-08-08T03:04:09.930Z] Time:          Fri Aug 07 2026 20:04:09 GMT-0700 (Pacific Daylight Time)
+[debug] [2026-08-08T03:04:09.930Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-08-08T03:04:09.940Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2026-08-08T03:04:10.056Z] >>> [apiv2][query] POST https://auth.firebase.tools/attest [none]
+[debug] [2026-08-08T03:04:10.057Z] >>> [apiv2][body] POST https://auth.firebase.tools/attest {"session_id":"40a7d39e-fb6d-4e4e-8ebd-9e31d9c33c41"}
+[debug] [2026-08-08T03:04:10.563Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2026-08-08T03:04:10.563Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}

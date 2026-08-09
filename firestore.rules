@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function admin() {
+      return signedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    match /users/{userId} {
+      allow create: if signedIn() && request.auth.uid == userId
+        && !request.resource.data.keys().hasAny(['role']);
+      allow read: if admin() || (signedIn() && request.auth.uid == userId);
+      allow update: if admin() || (signedIn() && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['fullName', 'phone', 'avatar', 'addresses', 'updatedAt']));
+      allow delete: if false;
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update, delete: if admin();
+    }
+
+    match /adminData/{documentId} {
+      allow read, create, update, delete: if admin();
+    }
+
+    match /orders/{orderId} {
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == 'pending';
+      allow read: if admin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow update: if admin() || (signedIn()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt'])
+        && request.resource.data.status == 'cancelled');
+      allow delete: if admin();
+    }
+  }
+}
